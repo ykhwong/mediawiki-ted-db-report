@@ -3,13 +3,13 @@ use warnings;
 use Time::Piece;
 use POSIX qw(tzset);
 use DBI;
- 
+
 my $host='kowiki.analytics.db.svc.eqiad.wmflabs';
 my $dbname='kowiki_p';
 my $default_file='~/replica.my.cnf';
 
 # Strings
-my $timezone_str = '%Y년 %m월 %d일 %H:%M (KST)';
+my $timezone_str = '%Y년 %m월 %d일 (%a) %H:%M (KST)';
 my $timezone_area = 'Asia/Seoul';
 my $report_template = '
 마지막 갱신: <onlyinclude>%s</onlyinclude>
@@ -50,6 +50,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	$i++;
 }
 
+$ENV{LANG}="ko_KR.utf8";
 $ENV{TZ} = $timezone_area;
 my $current_of = localtime->strftime($timezone_str);;
 my $final_result = sprintf($report_template, $current_of, join("\n", @output));

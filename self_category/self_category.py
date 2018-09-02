@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 import datetime
 import sys
+import locale
+from sys import platform
 from pytz import timezone
 if sys.version_info.major == 2:
     import MySQLdb
@@ -16,7 +18,7 @@ dbname='kowiki_p'
 default_file='~/replica.my.cnf'
 
 # Strings
-timezone_str = '%Y년 %m월 %d일 %H:%M (KST)'
+timezone_str = '%Y년 %m월 %d일 (%a) %H:%M (KST)'
 timezone_area = 'Asia/Seoul'
 report_template = '''
 마지막 갱신: <onlyinclude>%s</onlyinclude>.
@@ -59,12 +61,20 @@ for row in cursor.fetchall():
     i += 1
 
 if sys.version_info.major == 2:
+    if platform == "win32":
+        locale.setlocale(locale.LC_TIME, 'Korean_Korea.utf8')
+    else:
+        locale.setlocale(locale.LC_TIME, b'ko_KR.utf8')
     timezone_str = timezone_str.encode('utf-8')
     current_of = datetime.datetime.now(timezone(timezone_area)).strftime(timezone_str)
     current_of = current_of.decode('utf-8')
     final_result = report_template % (current_of, '\n'.join(output))
     final_result = final_result.encode('utf-8')
 else:
+    if platform == "win32":
+        locale.setlocale(locale.LC_TIME, 'Korean_Korea.utf8')
+    else:
+        locale.setlocale(locale.LC_TIME, 'ko_KR.utf8')
     current_of = datetime.datetime.now(timezone(timezone_area)).strftime(timezone_str)
     final_result = report_template % (current_of, '\n'.join(output))
 
