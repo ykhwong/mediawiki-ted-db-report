@@ -11,7 +11,7 @@ my $dbname='kowiki_p';
 my $default_file='~/replica.my.cnf';
 
 # Strings
-my $timezone_str = '%Y년 %m월 %d일 (%a) %H:%M (KST)';
+my $timezone_str = '%Y년 %-m월 %-d일 (%a) %H:%M (KST)';
 my $timezone_area = 'Asia/Seoul';
 my $report_template = '
 마지막 갱신: <onlyinclude>%s</onlyinclude>

@@ -18,7 +18,7 @@ dbname='kowiki_p'
 default_file='~/replica.my.cnf'
 
 # Strings
-timezone_str = '%Y년 %m월 %d일 (%a) %H:%M (KST)'
+timezone_str = '%Y년 %-m월 %-d일 (%a) %H:%M (KST)'
 timezone_area = 'Asia/Seoul'
 report_template = '''
 마지막 갱신: <onlyinclude>%s</onlyinclude>.

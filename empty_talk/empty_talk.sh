@@ -3,7 +3,7 @@ UTIL='expr wget date'
 URL='https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EA%B2%80%EC%83%89&limit=5000&offset=0&ns1=1&search=-insource%3A%2F%5B%5E+%5D%2F'
 CNT=1
 timezone_area='Asia/Seoul'
-timezone_str='%Y년 %m월 %d일 (%a) %H:%M (KST)'
+timezone_str='%Y년 %-m월 %-d일 (%a) %H:%M (KST)'
 
 for cmd in $UTIL
 do
