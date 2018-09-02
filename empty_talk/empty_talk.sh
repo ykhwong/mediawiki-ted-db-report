@@ -2,6 +2,8 @@ LANG=C
 UTIL='expr wget'
 URL='https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EA%B2%80%EC%83%89&limit=5000&offset=0&ns1=1&search=-insource%3A%2F%5B%5E+%5D%2F'
 CNT=1
+timezone_area='Asia/Seoul'
+timezone_str='%Y년 %m월 %d일 %H:%M (KST)'
 
 for cmd in $UTIL
 do
@@ -13,7 +15,9 @@ do
 	fi
 done
 
-echo '마지막 갱신: <onlyinclude>2018년 8월 28일 (금) 12:05 (KST)</onlyinclude>'
+TZ=":$timezone_area"
+DATE=`date +"${timezone_str}"`
+echo '마지막 갱신: <onlyinclude>'$DATE'</onlyinclude>'
 echo ''
 echo '{| class="wikitable sortable plainlinks" style="width:100%; margin:auto;"'
 echo '|- style="white-space:nowrap;"'
@@ -21,6 +25,7 @@ echo '! 순번 !! 문서 이름'
 echo '|-'
 IFS='
 '
+exit
 for sth in `wget -qO- $URL | sed 's/title="토론:/\ntitle="토론/mg' | sed 's/title="토론:/\ntitle="토론:/mg' | grep -P '^title=' | perl -pe 's/(^title="|" +data-serp-pos=.*)//g'`
 do
 	echo "| $CNT || [[$sth]]"
