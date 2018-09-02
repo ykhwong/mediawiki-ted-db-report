@@ -15,7 +15,7 @@ do
 	fi
 done
 
-TZ=":$timezone_area"
+export TZ=":${timezone_area}"
 DATE=`date +"${timezone_str}"`
 echo '마지막 갱신: <onlyinclude>'$DATE'</onlyinclude>'
 echo ''
