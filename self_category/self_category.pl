@@ -2,6 +2,8 @@ use strict;
 use warnings;
 use Time::Piece;
 use POSIX qw(tzset);
+use POSIX qw(locale_h);
+use locale;
 use DBI;
 
 my $host='kowiki.analytics.db.svc.eqiad.wmflabs';
@@ -50,7 +52,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	$i++;
 }
 
-$ENV{LANG}="ko_KR.utf8";
+setlocale(LC_TIME, $^O eq 'MSWin32' ? "Korean_Korea.utf8" : "ko_KR.utf8");
 $ENV{TZ} = $timezone_area;
 my $current_of = localtime->strftime($timezone_str);;
 my $final_result = sprintf($report_template, $current_of, join("\n", @output));
