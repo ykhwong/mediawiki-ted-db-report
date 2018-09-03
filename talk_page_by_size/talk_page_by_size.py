@@ -28,7 +28,7 @@ report_template = '''
 |- style="white-space:nowrap;"
 ! 순번
 ! 문서 이름
-! 크기
+! 크기 (단위: MB)
 |-
 %s
 |}
@@ -40,7 +40,7 @@ report_template2 = '''
 |- style="white-space:nowrap;"
 ! 순번
 ! 문서 이름
-! 크기
+! 크기 (단위: MB)
 |-
 %s
 |}
