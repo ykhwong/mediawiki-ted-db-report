@@ -25,7 +25,7 @@ echo '! 순번 !! 문서 이름'
 echo '|-'
 IFS='
 '
-for sth in `wget -qO- $URL | sed 'sed 's/title="토론:/\ntitle="토론:/mg' | grep -P '^title=' | perl -pe 's/(^title="|" +data-serp-pos=.*)//g'`
+for sth in `wget -qO- $URL | sed 's/title="토론:/\ntitle="토론:/mg' | grep -P '^title=' | perl -pe 's/(^title="|" +data-serp-pos=.*)//g'`
 do
 	echo "| $CNT || [[$sth]]"
 	echo "|-"
