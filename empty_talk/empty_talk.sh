@@ -1,5 +1,5 @@
 LANG=ko_KR.utf8
-UTIL='expr wget date'
+UTIL='expr wget date sed perl grep'
 URL='https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EA%B2%80%EC%83%89&limit=5000&offset=0&ns1=1&search=-insource%3A%2F%5B%5E+%5D%2F'
 CNT=1
 timezone_area='Asia/Seoul'
