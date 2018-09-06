@@ -488,16 +488,32 @@ sub _main {
 		when (/^(\d+)$/) {
 			my $action = $dirs{$1};
 			if ($action) {
-				my $pl = "../${action}/${action}.pl";
-				if ( -f $pl ) {
+				my $pl = "../${action}/${action}";
+				my $found=0;
+				if ( -f "${pl}.pl" ) {
+					$pl = "${pl}.pl";
+					$found=1;
+				} elsif ( -f "${pl}.sh" ) {
+					$pl = "${pl}.sh";
+					$found=1;
+				}
+				if ($found) {
 					my $prop_data = util::_slurp("../${action}/action.properties");
-					my $title;
+					my ($title, $try);
 					if ($prop_data) {
 						if ($prop_data =~ /title=(.+)/) {
 							$title=$1;
 						}
 					}
-					my $try = `perl $pl`;
+					if ($pl =~ /\.pl$/) {
+						$try = `perl $pl`;
+					} else {
+						if ($^O eq 'MSWin32' || $^O eq 'cygwin' || $^O eq 'dos') {
+							undef $try;
+						} else {
+							$try = `sh $pl`;
+						}
+					}
 					if ($try) {
 						my $wikitext = $bot_ko->get_text($title);
 						my $wikitext_changed = ::decode("utf8", $try);
