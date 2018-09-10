@@ -55,20 +55,11 @@ for row in cursor.fetchall():
     i += 1
 
 if sys.version_info.major == 2:
-    if platform == "win32":
-        locale.setlocale(locale.LC_TIME, 'Korean_Korea.utf8')
-    else:
-        locale.setlocale(locale.LC_TIME, b'ko_KR.utf8')
-    timezone_str = timezone_str.encode('utf-8')
-    current_of = datetime.datetime.now(timezone(timezone_area)).strftime(timezone_str)
-    current_of = current_of.decode('utf-8')
-    final_result = report_template % (current_of, '\n'.join(output))
-    final_result = final_result.encode('utf-8')
+    locale.setlocale(locale.LC_TIME, 'Korean_Korea.utf8' if platform == "win32" else b'ko_KR.utf8')
+    current_of = datetime.datetime.now(timezone(timezone_area)).strftime(timezone_str.encode('utf-8')).decode('utf-8')
+    final_result = (report_template % (current_of, '\n'.join(output))).encode('utf-8')
 else:
-    if platform == "win32":
-        locale.setlocale(locale.LC_TIME, 'Korean_Korea.utf8')
-    else:
-        locale.setlocale(locale.LC_TIME, 'ko_KR.utf8')
+    locale.setlocale(locale.LC_TIME, 'Korean_Korea.utf8' if platform == "win32" else 'ko_KR.utf8')
     current_of = datetime.datetime.now(timezone(timezone_area)).strftime(timezone_str)
     final_result = report_template % (current_of, '\n'.join(output))
 
