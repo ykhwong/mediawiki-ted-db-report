@@ -95,11 +95,11 @@ for row in cursor.fetchall():
 if sys.version_info.major == 2:
     locale.setlocale(locale.LC_TIME, 'Korean_Korea.utf8' if platform == "win32" else b'ko_KR.utf8')
     current_of = datetime.datetime.now(timezone(timezone_area)).strftime(timezone_str.encode('utf-8')).decode('utf-8')
-    final_result = (report_template % (current_of, '\n'.join(output))).encode('utf-8')
+    final_result = (report_template % (current_of, '\n'.join(output)) + report_template2 % '\n'.join(output2)).encode('utf-8')
 else:
     locale.setlocale(locale.LC_TIME, 'Korean_Korea.utf8' if platform == "win32" else 'ko_KR.utf8')
     current_of = datetime.datetime.now(timezone(timezone_area)).strftime(timezone_str)
-    final_result = report_template % (current_of, '\n'.join(output))
+    final_result = report_template % (current_of, '\n'.join(output)) + report_template2 % '\n'.join(output2)
 
 cursor.close()
 conn.close()
