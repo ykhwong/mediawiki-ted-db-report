@@ -87,7 +87,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 setlocale(LC_TIME, $^O eq 'MSWin32' ? "Korean_Korea.utf8" : "ko_KR.utf8");
 $ENV{TZ} = $timezone_area;
 my $current_of = localtime->strftime($timezone_str);;
-my $final_result = sprintf($report_template, $current_of, join("\n", @output)) . sprintf($report_template2, join("\n", @output));
+my $final_result = sprintf($report_template, $current_of, join("\n", @output)) . sprintf($report_template2, join("\n", @output2));
 
 $cursor->finish();
 $conn->disconnect();
