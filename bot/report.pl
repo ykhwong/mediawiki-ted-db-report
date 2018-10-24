@@ -458,6 +458,59 @@ while (1) {
 	_main();
 }
 
+sub _perform {
+	my $action = shift;
+	if ($action !~ /\S/) {
+		printf("Error: No action\n");
+		exit 1;
+	}
+	#my $action = $dirs{$cnt};
+	if ($action) {
+		my $pl = "../${action}/${action}";
+		my $found=0;
+		if ( -f "${pl}.pl" ) {
+			$pl = "${pl}.pl";
+			$found=1;
+		} elsif ( -f "${pl}.sh" ) {
+			$pl = "${pl}.sh";
+			$found=1;
+		}
+		if ($found) {
+			my $prop_data = util::_slurp("../${action}/action.properties");
+			my ($title, $try);
+			if ($prop_data) {
+				if ($prop_data =~ /title=(.+)/) {
+					$title=$1;
+				}
+			}
+			if ($pl =~ /\.pl$/) {
+				$try = `perl $pl`;
+			} else {
+				if ($^O eq 'MSWin32' || $^O eq 'cygwin' || $^O eq 'dos') {
+					undef $try;
+				} else {
+					$try = `sh $pl`;
+				}
+			}
+			if ($try) {
+				my $wikitext = $bot_ko->get_text($title);
+				my $wikitext_changed = ::decode("utf8", $try);
+				my ($comp1, $comp2) = ($wikitext, $wikitext_changed);
+				$comp1 =~ s/\s+//mg;
+				$comp2 =~ s/\s+//mg;
+				if ($comp1 eq $comp2) {
+			                util::_nprint(sprintf($not_changed_msg, $title));
+			                next;
+				}
+				if ($title) {
+					util::_diff($title, 'DB 보고서 업데이트', $wikitext, $wikitext_changed);
+					util::_edit($title, $wikitext_changed, "봇: DB 보고서 업데이트");
+				}
+			}
+		}
+	}
+}
+
 sub _main {
 	my %dirs;
 	my $cnt=0;
@@ -474,6 +527,7 @@ sub _main {
 
 	$listing =
 	"%s\n" .
+	"A) All of the below\n" .
 	"[Bot Actions]\n";
 
 	foreach my $key (sort {$a <=> $b} keys %dirs) {
@@ -485,52 +539,14 @@ sub _main {
 	printf($listing, $horizontal_line, $horizontal_line);
 	my $userword = util::_userword("[Enter] ", 0);
 	given ($userword) {
-		when (/^(\d+)$/) {
-			my $action = $dirs{$1};
-			if ($action) {
-				my $pl = "../${action}/${action}";
-				my $found=0;
-				if ( -f "${pl}.pl" ) {
-					$pl = "${pl}.pl";
-					$found=1;
-				} elsif ( -f "${pl}.sh" ) {
-					$pl = "${pl}.sh";
-					$found=1;
-				}
-				if ($found) {
-					my $prop_data = util::_slurp("../${action}/action.properties");
-					my ($title, $try);
-					if ($prop_data) {
-						if ($prop_data =~ /title=(.+)/) {
-							$title=$1;
-						}
-					}
-					if ($pl =~ /\.pl$/) {
-						$try = `perl $pl`;
-					} else {
-						if ($^O eq 'MSWin32' || $^O eq 'cygwin' || $^O eq 'dos') {
-							undef $try;
-						} else {
-							$try = `sh $pl`;
-						}
-					}
-					if ($try) {
-						my $wikitext = $bot_ko->get_text($title);
-						my $wikitext_changed = ::decode("utf8", $try);
-						my ($comp1, $comp2) = ($wikitext, $wikitext_changed);
-						$comp1 =~ s/\s+//mg;
-						$comp2 =~ s/\s+//mg;
-						if ($comp1 eq $comp2) {
-					                util::_nprint(sprintf($not_changed_msg, $title));
-					                next;
-						}
-						if ($title) {
-							util::_diff($title, 'DB 보고서 업데이트', $wikitext, $wikitext_changed);
-							util::_edit($title, $wikitext_changed, "봇: DB 보고서 업데이트");
-						}
-					}
-				}
+		when (/^A$/i) {
+			for (1 .. $cnt) {
+				_perform($dirs{$_});
 			}
+		}
+		when (/^(\d+)$/) {
+			my $k_num=$1;
+			_perform($dirs{$k_num});
 		}
 		when (/^\Q!\E(.*)$/) { system($1); }
 		default { print "\n";  }
@@ -548,4 +564,3 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY.
 You may redistribute it and/or modify source code, but you MUST
 provide the source code you have made.
-
