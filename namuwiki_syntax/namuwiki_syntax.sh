@@ -1,9 +1,9 @@
 LANG=ko_KR.utf8
-UTIL='expr wget date sed perl grep'
-URL='https://ko.wikipedia.org/w/index.php?title=Æ¯¼ö:°Ë»ö&limit=5000&offset=0&profile=default&search=insource%3A%2F%28%5C%5B%5C%2A+%7C%5B%5E%5C%5B%5D%5C%5B%28¸ñÂ÷%7C°¢ÁÖ%7Cyoutube%29%5C%5D%7C%5C%7B%23»öÄÚµå%7C%5C%5Binclude%5C%28%7C%5C%5Bbr%5C%5D%7C%5C%7B%5C%7B%5C%7B%5C%2B%5B0-9%5D%29%2F&advancedSearch-current=%7B"namespaces"%3A%5B0%5D%7D'
+UTIL='expr wget date sed perl grep cat'
+URL='https://ko.wikipedia.org/w/index.php?title=íŠ¹ìˆ˜:ê²€ìƒ‰&limit=5000&offset=0&profile=default&search=insource%3A%2F%28%5C%5B%5C%2A+%7C%5B%5E%5C%5B%5D%5C%5B%28ëª©ì°¨%7Cê°ì£¼%7Cyoutube%29%5C%5D%7C%5C%7B%23ìƒ‰ì½”ë“œ%7C%5C%5Binclude%5C%28%7C%5C%5Bbr%5C%5D%7C%5C%7B%5C%7B%5C%7B%5C%2B%5B0-9%5D%29%2F&advancedSearch-current=%7B"namespaces"%3A%5B0%5D%7D'
 CNT=1
 timezone_area='Asia/Seoul'
-timezone_str='%Y³â %-m¿ù %-dÀÏ (%a) %H:%M (KST)'
+timezone_str='%Yë…„ %-mì›” %-dì¼ (%a) %H:%M (KST)'
 
 for cmd in $UTIL
 do
@@ -17,13 +17,35 @@ done
 
 export TZ=":${timezone_area}"
 DATE=`date +"${timezone_str}"`
-echo '¸¶Áö¸· °»½Å: <onlyinclude>'$DATE'</onlyinclude>'
+echo 'ë§ˆì§€ë§‰ ê°±ì‹ : <onlyinclude>'$DATE'</onlyinclude>'
 echo ''
-echo '³ª¹«À§Å° ¹®¹ıÀÌ Æ÷ÇÔµÇ¾ú°Å³ª Æ÷ÇÔµÇ¾ú´Ù°í ÀÇ½ÉµÇ´Â ¹®¼­µéÀÔ´Ï´Ù. À§Å°¹é°ú¿¡ ¸Â´Â ¹®¹ıÀ¸·Î ¼öÁ¤ÇØ ÁÖ¼¼¿ä. ([[À§Å°¹é°ú:´Ù¸¥ »çÀÌÆ®¿¡¼­ ¿À½Å ºĞµé²² µå¸®´Â ¸»¾¸/³ª¹«À§Å°]] Âü°í)'
+echo 'ë‚˜ë¬´ìœ„í‚¤ ë¬¸ë²•ì´ í¬í•¨ë˜ì—ˆê±°ë‚˜ í¬í•¨ë˜ì—ˆë‹¤ê³  ì˜ì‹¬ë˜ëŠ” ë¬¸ì„œë“¤ì…ë‹ˆë‹¤. ìœ„í‚¤ë°±ê³¼ì— ë§ëŠ” ë¬¸ë²•ìœ¼ë¡œ ìˆ˜ì •í•´ ì£¼ì„¸ìš”. ([[ìœ„í‚¤ë°±ê³¼:ë‹¤ë¥¸ ì‚¬ì´íŠ¸ì—ì„œ ì˜¤ì‹  ë¶„ë“¤ê»˜ ë“œë¦¬ëŠ” ë§ì”€/ë‚˜ë¬´ìœ„í‚¤]] ì°¸ê³ )'
+cat <<"END"
+{| class="wikitable" style="text-align:center; width: 750px;"
+! width="300px" | ë” ì‹œë“œ ë¬¸ë²•
+! width="450px" |[[ë¯¸ë””ì–´ìœ„í‚¤]] ë¬¸ë²•
+|-
+|<code><nowiki>[* ì£¼ì„]</nowiki></code>||<code><nowiki><ref>ì£¼ì„</ref></nowiki></code>
+|- 
+|<code><nowiki>[ê°ì£¼]</nowiki></code><br />||<code><nowiki><references/></nowiki></code><br /><code><nowiki>{{ê°ì£¼}}</nowiki></code>
+|-
+|<code><nowiki>{{{+1 í•œë‹¨ê³„ ì»¤ì§„ ê¸€ì}}}</nowiki></code>||<code><nowiki><span style="font-size:larger">í•œë‹¨ê³„ ì»¤ì§„ ê¸€ì</span></nowiki></code><br /><code><nowiki>{{ê¸€ê¼´|size=120%|ê¸€ì}}</nowiki></code>
+|-
+|<code><nowiki>[include(í‹€:XXX)]</nowiki></code>||<code><nowiki>{{XXX}}</nowiki></code>
+|-
+|<code><nowiki>{{{#ìƒ‰ì½”ë“œ ìƒ‰}}}</nowiki></code>||<code><nowiki><span style="color:ìƒ‰ì½”ë“œ">ìƒ‰</span></nowiki></code><br /><code><nowiki>{{ê¸€ì”¨ ìƒ‰|green|ì´ˆë¡ìƒ‰ ê¸€ì”¨}}</nowiki></code>
+|-
+|<code><nowiki>[ëª©ì°¨]</nowiki></code>||'''ì‚¬ìš©í•˜ì§€ ì•ŠìŒ (ì‚­ì œ)'''
+|-
+|<code><nowiki>[youtube(ì˜ìƒ ID)]</nowiki></code><br /><code><nowiki>[[youtube(ì˜ìƒ ID)]]</nowiki></code>||'''ì‚¬ìš©í•˜ì§€ ì•ŠìŒ (ì‚­ì œ)'''
+|-
+|<code><nowiki>[br]</nowiki></code>||<code><nowiki><br /></nowiki></code>
+|}
+END
 echo ''
 echo '{| class="wikitable sortable plainlinks" style="width:100%; margin:auto;"'
 echo '|- style="white-space:nowrap;"'
-echo '! ¼ø¹ø !! ¹®¼­ ÀÌ¸§'
+echo '! ìˆœë²ˆ !! ë¬¸ì„œ ì´ë¦„'
 echo '|-'
 IFS='
 '
