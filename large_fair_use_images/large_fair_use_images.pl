@@ -16,7 +16,7 @@ my $timezone_area = 'Asia/Seoul';
 my $report_template = q(
 마지막 갱신: <onlyinclude>%s</onlyinclude>
 
-아래는 [[위키백과:비자유_저작물의_공정한_이용#이미지]]에서 설명하는 비자유 그림 중에 정해진 크기를 만족하지 않는 그림 파일을 나열합니다.
+아래는 [[위키백과:비자유_저작물의_공정한_이용#이미지]]에서 설명하는 비자유 그림 중에 지나치게 큰 크기의 그림 파일을 나열합니다. (저장 기준임. 표시 기준의 2배)
 
 );
 
@@ -37,7 +37,7 @@ SELECT * FROM
 ( SELECT page_title FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from WHERE page.page_namespace = 6 AND page.page_is_redirect = 0  AND
 categorylinks.cl_to = '비자유_로고' ) AS pt
 WHERE EXISTS (
-  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND (IMG_WIDTH*IMG_HEIGHT)>10000
+  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND (IMG_WIDTH*IMG_HEIGHT)>20000
 );
 ));
 $cursor->execute();
@@ -47,6 +47,7 @@ my (@output, @output2, @output3, @output4);
 while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("[[:파일:%s]]", $row->{'page_title'});
 	my $table_row = sprintf("| %d\n| %s\n|-", $i, $page_title);
+	if ($row->{'page_title'} =~ /\.svg$/i) { next; }
 	push @output, $table_row;
 	$i++;
 }
@@ -56,7 +57,7 @@ SELECT * FROM
 ( SELECT page_title FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from WHERE page.page_namespace = 6 AND page.page_is_redirect = 0  AND
 categorylinks.cl_to = '비자유_건축물' ) AS pt
 WHERE EXISTS (
-  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND ((IMG_WIDTH*IMG_HEIGHT)>100000 OR IMG_WIDTH>200 OR IMG_HEIGHT>600)
+  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND ((IMG_WIDTH*IMG_HEIGHT)>200000 OR IMG_WIDTH>400 OR IMG_HEIGHT>1200)
 );
 ));
 $cursor->execute();
@@ -65,6 +66,7 @@ $i = 1;
 while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("[[:파일:%s]]", $row->{'page_title'});
 	my $table_row = sprintf("| %d\n| %s\n|-", $i, $page_title);
+	if ($row->{'page_title'} =~ /\.svg$/i) { next; }
 	push @output2, $table_row;
 	$i++;
 }
@@ -73,10 +75,10 @@ SELECT * FROM
 ( SELECT page_title FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from WHERE page.page_namespace = 6 AND page.page_is_redirect = 0  AND
 categorylinks.cl_to = '음반_표지' ) AS pt
 WHERE EXISTS (
-  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND NOT (
-   ( IMG_WIDTH > IMG_HEIGHT AND IMG_HEIGHT >= 150 AND IMG_HEIGHT <= 250 ) OR
-   ( IMG_WIDTH < IMG_HEIGHT AND IMG_WIDTH >= 150 AND IMG_WIDTH <= 250 ) OR
-   ( IMG_WIDTH = IMG_HEIGHT AND IMG_WIDTH >= 150 AND IMG_WIDTH <= 250 )
+  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND (
+   ( IMG_WIDTH > IMG_HEIGHT AND IMG_HEIGHT > 500 ) OR
+   ( IMG_WIDTH < IMG_HEIGHT AND IMG_WIDTH > 500 ) OR
+   ( IMG_WIDTH = IMG_HEIGHT AND IMG_WIDTH > 500 )
   )
 );
 ));
@@ -86,6 +88,7 @@ $i = 1;
 while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("[[:파일:%s]]", $row->{'page_title'});
 	my $table_row = sprintf("| %d\n| %s\n|-", $i, $page_title);
+	if ($row->{'page_title'} =~ /\.svg$/i) { next; }
 	push @output3, $table_row;
 	$i++;
 }
@@ -98,7 +101,7 @@ SELECT * FROM
   categorylinks.cl_to = '비자유_소프트웨어_스크린샷' OR categorylinks.cl_to = '윈도우_소프트웨어의_스크린샷'
  ) ) AS pt
 WHERE EXISTS (
-  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND (IMG_WIDTH*IMG_HEIGHT)>40000
+  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND (IMG_WIDTH*IMG_HEIGHT)>80000
 );
 ));
 $cursor->execute();
@@ -107,6 +110,7 @@ $i = 1;
 while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("[[:파일:%s]]", $row->{'page_title'});
 	my $table_row = sprintf("| %d\n| %s\n|-", $i, $page_title);
+	if ($row->{'page_title'} =~ /\.svg$/i) { next; }
 	push @output4, $table_row;
 	$i++;
 }
@@ -120,25 +124,29 @@ my $final_result = sprintf($report_template, $current_of);
 
 $final_result .= q(
 == 비자유 로고 ==
-[[:분류:비자유 로고]]에 속한 그림 중 가로 세로의 곱이 10,000 픽셀을 초과한 그림입니다.
+* 참조: [[:분류:비자유 로고]]
+* 기준: 가로 세로의 곱을 20,000 픽셀을 초과 (저장 기준임. 표시 기준의 2배)
 );
 $final_result .= sprintf($report_template1, join("\n", @output));
 
 $final_result .= q(
 == 비자유 건축물 ==
-[[:분류:비자유 건축물]]에 속한 그림 중 가로가 200 픽셀, 세로가 600 픽셀을 초과하거나, 가로 세로의 곱이 100,000 픽셀을 초과한 그림입니다.
+* 참조: [[:분류:비자유 건축물]]
+* 기준: 가로가 400 픽셀, 세로가 1200 픽셀을 초과 또는 가로 세로의 곱이 200,000 픽셀을 초과 (저장 기준임. 표시 기준의 2배)
 );
 $final_result .= sprintf($report_template1, join("\n", @output2));
 
 $final_result .= q(
 == 음반 표지 사진 ==
-[[:분류:음반 표지]]에 속한 그림 중 가로와 세로 중 짧은 것을 기준으로 150 픽셀 이상, 250 픽셀 이하를 만족하지 않는 그림입니다.
+* 참조: [[:분류:음반 표지]]
+* 기준: 가로, 세로 중 짧은 것을 기준으로 500 픽셀을 초과 (저장 기준임. 표시 기준의 2배)
 );
 $final_result .= sprintf($report_template1, join("\n", @output3));
 
 $final_result .= q(
 == 캡처 사진 ==
-[[:분류:영화 장면]], [[:분류:뮤직 비디오 장면]], [[:분류:웹 페이지 스크린샷]], [[:분류:텔레비전 장면]], [[:분류:마이크로소프트 제품의 스크린샷]], [[:분류:맥 소프트웨어의 스크린샷]], [[:분류:비자유 비디오 게임 스크린샷]], [[:분류:비자유 소프트웨어 스크린샷]], [[:분류:윈도우 소프트웨어의 스크린샷]]에 속한 그림 중 가로 세로의 곱이 40,000 픽셀을 초과하는 그림입니다.
+* 참조: [[:분류:영화 장면]], [[:분류:뮤직 비디오 장면]], [[:분류:웹 페이지 스크린샷]], [[:분류:텔레비전 장면]], [[:분류:마이크로소프트 제품의 스크린샷]], [[:분류:맥 소프트웨어의 스크린샷]], [[:분류:비자유 비디오 게임 스크린샷]], [[:분류:비자유 소프트웨어 스크린샷]], [[:분류:윈도우 소프트웨어의 스크린샷]]
+* 기준: 가로 세로의 곱이 80,000 픽셀을 초과하는 그림입니다. (저장 기준임. 표시 기준의 2배)
 );
 $final_result .= sprintf($report_template1, join("\n", @output4));
 
