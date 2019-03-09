@@ -26,7 +26,6 @@
 #
 use strict;
 use File::Basename;
-use DateTime;
 use Term::ReadKey;
 use MediaWiki::Bot qw(:constants);
 use Text::Diff;
@@ -286,16 +285,16 @@ sub _sleep {
 	if ($sleep_begintime eq 0) {
 		# does nothing
 	} else {
-		$sleep_endtime = DateTime->now();
+		$sleep_endtime = time();
 		my $elapse = $sleep_endtime - $sleep_begintime;
-		my $elapse2 = $elapse->in_units('seconds');
+		my $elapse2 = $elapse;
 		if ($elapse2 > $sleep_interval_seconds) {
 			# does nothing
 		} else {
 			$rep_inp=_timed_input($sleep_interval_seconds-$elapse2);
 		}
 	}
-	$sleep_begintime = DateTime->now();
+	$sleep_begintime = time();
 	return $rep_inp;
 }
 sub _edit {
