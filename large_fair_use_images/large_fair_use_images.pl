@@ -137,7 +137,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	}
 
 	#my $table_row = sprintf("| %d || %s || %s || %s || %s\n|-", $i, $page_title, $img_width, $img_height, $author);
-	my $table_row = sprintf("| %d || %s || %d || %d\n|-", $i, $page_title, $img_width, $img_height);
+	my $table_row = sprintf("| %d || %s || %s || %s\n|-", $i, $page_title, $img_width, $img_height);
 	if ($row->{'page_title'} =~ /\.svg$/i) { next; }
 	push @output3, $table_row;
 	$i++;
