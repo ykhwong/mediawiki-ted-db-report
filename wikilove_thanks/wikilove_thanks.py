@@ -18,53 +18,53 @@ dbname='kowiki_p'
 default_file='~/replica.my.cnf'
 
 # Strings
-timezone_str = '%Yë…„ %-mì›” %-dì¼ (%a) %H:%M (KST)'
+timezone_str = '%Y³â %-m¿ù %-dÀÏ (%a) %H:%M (KST)'
 timezone_area = 'Asia/Seoul'
 report_template = '''
-ë§ˆì§€ë§‰ ê°±ì‹ : <onlyinclude>%s</onlyinclude>.
+¸¶Áö¸· °»½Å: <onlyinclude>%s</onlyinclude>.
 
-== ìœ„í‚¤ì‚¬ë‘ì„ ë§ì´ ë³´ë‚¸ ì‚¬ëŒ ==
+== À§Å°»ç¶ûÀ» ¸¹ÀÌ º¸³½ »ç¶÷ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ìˆœë²ˆ
-! ì‚¬ìš©ì
-! íšŸìˆ˜
+! ¼ø¹ø
+! »ç¿ëÀÚ
+! È½¼ö
 |-
 %s
 |}
 '''
 
 report_template2 = '''
-== ìœ„í‚¤ì‚¬ë‘ì„ ë§ì´ ë°›ì€ ì‚¬ëŒ ==
+== À§Å°»ç¶ûÀ» ¸¹ÀÌ ¹ŞÀº »ç¶÷ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ìˆœë²ˆ
-! ì‚¬ìš©ì
-! íšŸìˆ˜
+! ¼ø¹ø
+! »ç¿ëÀÚ
+! È½¼ö
 |-
 %s
 |}
 '''
 
 report_template3 = '''
-== ê³ ë§ˆì›€(ê°ì‚¬)ì„ ë§ì´ í‘œí•œ ì‚¬ëŒ ==
+== °í¸¶¿ò(°¨»ç)À» ¸¹ÀÌ Ç¥ÇÑ »ç¶÷ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ìˆœë²ˆ
-! ì‚¬ìš©ì
-! íšŸìˆ˜
+! ¼ø¹ø
+! »ç¿ëÀÚ
+! È½¼ö
 |-
 %s
 |}
 '''
 
 report_template4 = '''
-== ê³ ë§ˆì›€(ê°ì‚¬)ì„ ë§ì´ ë°›ì€ ì‚¬ëŒ ==
+== °í¸¶¿ò(°¨»ç)À» ¸¹ÀÌ ¹ŞÀº »ç¶÷ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ìˆœë²ˆ
-! ì‚¬ìš©ì
-! íšŸìˆ˜
+! ¼ø¹ø
+! »ç¿ëÀÚ
+! È½¼ö
 |-
 %s
 |}
@@ -87,7 +87,7 @@ SELECT
 i = 1
 output = []
 for row in cursor.fetchall():
-    page_title = '[[ì‚¬ìš©ì:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
+    page_title = '[[»ç¿ëÀÚ:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
     table_row = '''| %d
 | %s
 |-''' % (i, page_title)
@@ -109,7 +109,7 @@ SELECT
 i = 1
 output2 = []
 for row in cursor.fetchall():
-    page_title = '[[ì‚¬ìš©ì:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
+    page_title = '[[»ç¿ëÀÚ:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
     table_row = '''| %d
 | %s
 |-''' % (i, page_title)
@@ -117,10 +117,11 @@ for row in cursor.fetchall():
     i += 1
 
 cursor.execute('''
-select log_user_text as user_name, count(log_user_text) as counts
+select user.user_name as user_name, count(user_name) as counts
 from logging
+join user on log_actor = user.user_id
 where log_type = 'thanks'
-AND NOT EXISTS (SELECT 1 from ipblocks WHERE ipb_address = log_user_text)
+AND NOT EXISTS (SELECT 1 from ipblocks WHERE ipb_address = user_name)
 group by user_name
 order by counts DESC
 LIMIT 100;
@@ -129,7 +130,7 @@ LIMIT 100;
 i = 1
 output3 = []
 for row in cursor.fetchall():
-    page_title = '[[ì‚¬ìš©ì:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
+    page_title = '[[»ç¿ëÀÚ:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
     table_row = '''| %d
 | %s
 |-''' % (i, page_title)
@@ -148,12 +149,14 @@ LIMIT 100;
 i = 1
 output4 = []
 for row in cursor.fetchall():
-    page_title = '[[ì‚¬ìš©ì:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
+    page_title = '[[»ç¿ëÀÚ:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
     table_row = '''| %d
 | %s
 |-''' % (i, page_title)
     output4.append(table_row)
     i += 1
+
+
 
 if sys.version_info.major == 2:
     locale.setlocale(locale.LC_TIME, 'Korean_Korea.utf8' if platform == "win32" else b'ko_KR.utf8')
@@ -168,4 +171,3 @@ cursor.close()
 conn.close()
 
 print(final_result)
-
