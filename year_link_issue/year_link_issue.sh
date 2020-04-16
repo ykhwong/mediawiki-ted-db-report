@@ -77,11 +77,6 @@ do
 	done
 done
 echo "|}"
-if [ $CNT -ne 1 ]; then
-	CNT=`expr $CNT - 1`
-	echo "=== 수정 필요 ($CNT건) ==="
-	echo "위 목록의 링크에 들어가셔서 <code><nowiki>|${FULLCNT}년]]</nowiki></code>으로 끝나는 링크를 찾아 알맞은 연도로 링크를 수정해 주세요."
-fi
 done
 
 unset IFS
