@@ -37,13 +37,13 @@ if [ $FULLCNT -eq 0 ]; then
 fi
 echo ''
 echo "== ${FULLCNT}년 =="
-echo "<code><nowiki>|${FULLCNT}년]]</nowiki></code>으로 끝나는 링크를 찾아 알맞은 연도로 링크를 수정해 주세요."
 echo '{| class="wikitable sortable plainlinks" style="width:100%; margin:auto;"'
 echo '|- style="white-space:nowrap;"'
 echo '! 순번 !! 문서 이름'
 echo '|-'
 IFS='
 '
+CNT=1
 for sth in `wget -qO- ${URL1}${FULLCNT}${URL2} | perl -pe 's/title="/\ntitle="/mg' | grep -P '^title=' | perl -pe 's/(^title="|" +data-serp-pos=.*)//g' | grep -vP '>' | perl -pe 's/^\*+$//'`
 do
 	echo "| $CNT || [[${sth}]]"
@@ -51,6 +51,11 @@ do
 	CNT=`expr $CNT + 1`
 done
 echo "|}"
+if [ $CNT -ne 1 ]; then
+	CNT=`expr $CNT - 1`
+	echo "=== 수정 필요 ($CNT건) ==="
+	echo "위 목록의 링크에 들어가셔서 <code><nowiki>|${FULLCNT}년]]</nowiki></code>으로 끝나는 링크를 찾아 알맞은 연도로 링크를 수정해 주세요."
+fi
 done
 
 unset IFS
