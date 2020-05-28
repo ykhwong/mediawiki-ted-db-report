@@ -146,7 +146,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 #$cursor = $conn->prepare(q(
 #SELECT * FROM
 #( SELECT page.page_title, image.img_width, image.img_height, rev_user_text FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from JOIN image ON page.page_title=image.img_name JOIN revision_userindex ON page_id = rev_page WHERE rev_timestamp > 1 AND rev_parent_id = '0' AND page.page_namespace = 6 AND page.page_is_redirect = 0  AND
-#( categorylinks.cl_to = '영화_장면' OR categorylinks.cl_to = '뮤직_비디오_장면' OR categorylinks.cl_to = '웹_페이지_스크린샷' OR categorylinks.cl_to = '텔레비전_장면' OR
+#( categorylinks.cl_to = '영화_장면' OR categorylinks.cl_to = '뮤직_비디오_장면' OR categorylinks.cl_to = '비자유_웹_페이지_스크린샷' OR categorylinks.cl_to = '텔레비전_장면' OR
 #  categorylinks.cl_to = '마이크로소프트_제품의_스크린샷' OR categorylinks.cl_to = '맥_소프트웨어의_스크린샷' OR categorylinks.cl_to = '비자유_비디오_게임_스크린샷' OR
 #  categorylinks.cl_to = '비자유_소프트웨어_스크린샷' OR categorylinks.cl_to = '윈도우_소프트웨어의_스크린샷'
 # ) ) AS pt
@@ -157,7 +157,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 $cursor = $conn->prepare(q(
 SELECT * FROM
 ( SELECT page.page_title, image.img_width, image.img_height FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from JOIN image ON page.page_title=image.img_name JOIN revision_userindex ON page_id = rev_page WHERE rev_timestamp > 1 AND rev_parent_id = '0' AND page.page_namespace = 6 AND page.page_is_redirect = 0  AND
-( categorylinks.cl_to = '영화_장면' OR categorylinks.cl_to = '뮤직_비디오_장면' OR categorylinks.cl_to = '웹_페이지_스크린샷' OR categorylinks.cl_to = '텔레비전_장면' OR
+( categorylinks.cl_to = '영화_장면' OR categorylinks.cl_to = '뮤직_비디오_장면' OR categorylinks.cl_to = '비자유_웹_페이지_스크린샷' OR categorylinks.cl_to = '텔레비전_장면' OR
   categorylinks.cl_to = '마이크로소프트_제품의_스크린샷' OR categorylinks.cl_to = '맥_소프트웨어의_스크린샷' OR categorylinks.cl_to = '비자유_비디오_게임_스크린샷' OR
   categorylinks.cl_to = '비자유_소프트웨어_스크린샷' OR categorylinks.cl_to = '윈도우_소프트웨어의_스크린샷'
  ) ) AS pt
@@ -211,7 +211,7 @@ $final_result .= sprintf($report_template1, join("\n", @output3));
 
 $final_result .= q(
 == 캡처 사진 ==
-* 참조: [[:분류:영화 장면]], [[:분류:뮤직 비디오 장면]], [[:분류:웹 페이지 스크린샷]], [[:분류:텔레비전 장면]], [[:분류:마이크로소프트 제품의 스크린샷]], [[:분류:맥 소프트웨어의 스크린샷]], [[:분류:비자유 비디오 게임 스크린샷]], [[:분류:비자유 소프트웨어 스크린샷]], [[:분류:윈도우 소프트웨어의 스크린샷]]
+* 참조: [[:분류:영화 장면]], [[:분류:뮤직 비디오 장면]], [[:분류:비자유 웹 페이지 스크린샷]], [[:분류:텔레비전 장면]], [[:분류:마이크로소프트 제품의 스크린샷]], [[:분류:맥 소프트웨어의 스크린샷]], [[:분류:비자유 비디오 게임 스크린샷]], [[:분류:비자유 소프트웨어 스크린샷]], [[:분류:윈도우 소프트웨어의 스크린샷]]
 * 기준: 가로 세로의 곱이 80,000 픽셀을 초과하는 그림입니다. (저장 기준임. 표시 기준의 2배)
 );
 $final_result .= sprintf($report_template1, join("\n", @output4));
