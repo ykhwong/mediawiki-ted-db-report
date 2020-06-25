@@ -25,6 +25,7 @@ my $report_template1 = q(
 ! 문서 이름
 ! 가로
 ! 세로
+! 가로x세로
 <!-- ! 생성자 -->
 |-
 %s
@@ -58,9 +59,10 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("[[:파일:%s]]", $row->{'page_title'});
 	my $img_width = sprintf("%s", $row->{'img_width'});
 	my $img_height = sprintf("%s", $row->{'img_height'});
+	my $img_size = $img_width * $img_height;
 	#my $author = sprintf("%s", $row->{'rev_user_text'});
 	#my $table_row = sprintf("| %d || %s || %d || %d || %s\n|-", $i, $page_title, $img_width, $img_height, $author);
-	my $table_row = sprintf("| %d || %s || %d || %d\n|-", $i, $page_title, $img_width, $img_height);
+	my $table_row = sprintf("| %d || %s || %d || %d || %d\n|-", $i, $page_title, $img_width, $img_height, $img_size);
 	if ($row->{'page_title'} =~ /\.svg$/i) { next; }
 	push @output, $table_row;
 	$i++;
@@ -90,9 +92,10 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("[[:파일:%s]]", $row->{'page_title'});
 	my $img_width = sprintf("%s", $row->{'img_width'});
 	my $img_height = sprintf("%s", $row->{'img_height'});
+	my $img_size = $img_width * $img_height;
 	#my $author = sprintf("%s", $row->{'rev_user_text'});
 	#my $table_row = sprintf("| %d || %s || %d || %d || %s\n|-", $i, $page_title, $img_width, $img_height, $author);
-	my $table_row = sprintf("| %d || %s || %d || %d\n|-", $i, $page_title, $img_width, $img_height);
+	my $table_row = sprintf("| %d || %s || %d || %d || %d\n|-", $i, $page_title, $img_width, $img_height, $img_size);
 	if ($row->{'page_title'} =~ /\.svg$/i) { next; }
 	push @output2, $table_row;
 	$i++;
@@ -129,6 +132,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("[[:파일:%s]]", $row->{'page_title'});
 	my $img_width = sprintf("%s", $row->{'img_width'});
 	my $img_height = sprintf("%s", $row->{'img_height'});
+	my $img_size = $img_width * $img_height;
 	#my $author = sprintf("%s", $row->{'rev_user_text'});
 
 	if ($img_width eq $img_height) {
@@ -137,7 +141,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	}
 
 	#my $table_row = sprintf("| %d || %s || %s || %s || %s\n|-", $i, $page_title, $img_width, $img_height, $author);
-	my $table_row = sprintf("| %d || %s || %s || %s\n|-", $i, $page_title, $img_width, $img_height);
+	my $table_row = sprintf("| %d || %s || %s || %s || %d\n|-", $i, $page_title, $img_width, $img_height, $img_size);
 	if ($row->{'page_title'} =~ /\.svg$/i) { next; }
 	push @output3, $table_row;
 	$i++;
@@ -173,9 +177,10 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("[[:파일:%s]]", $row->{'page_title'});
 	my $img_width = sprintf("%s", $row->{'img_width'});
 	my $img_height = sprintf("%s", $row->{'img_height'});
+	my $img_size = $img_width * $img_height;
 	#my $author = sprintf("%s", $row->{'rev_user_text'});
 	#my $table_row = sprintf("| %d || %s || %d || %d || %s\n|-", $i, $page_title, $img_width, $img_height, $author);
-	my $table_row = sprintf("| %d || %s || %d || %d \n|-", $i, $page_title, $img_width, $img_height);
+	my $table_row = sprintf("| %d || %s || %d || %d || %d \n|-", $i, $page_title, $img_width, $img_height, $img_size);
 	if ($row->{'page_title'} =~ /\.svg$/i) { next; }
 	push @output4, $table_row;
 	$i++;
