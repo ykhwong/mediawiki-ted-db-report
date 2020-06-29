@@ -159,7 +159,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 #);
 #));
 $cursor = $conn->prepare(q(
-SELECT * FROM
+SELECT DISTINCT * FROM
 ( SELECT page.page_title, image.img_width, image.img_height FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from JOIN image ON page.page_title=image.img_name JOIN revision_userindex ON page_id = rev_page WHERE rev_timestamp > 1 AND rev_parent_id = '0' AND page.page_namespace = 6 AND page.page_is_redirect = 0  AND
 ( categorylinks.cl_to = '영화_장면' OR categorylinks.cl_to = '뮤직_비디오_장면' OR categorylinks.cl_to = '비자유_웹_페이지_스크린샷' OR categorylinks.cl_to = '텔레비전_장면' OR
   categorylinks.cl_to = '마이크로소프트_제품의_스크린샷' OR categorylinks.cl_to = '맥_소프트웨어의_스크린샷' OR categorylinks.cl_to = '비자유_비디오_게임_스크린샷' OR
