@@ -73,15 +73,20 @@ GROUP BY page_namespace;
 $cursor->execute();
 
 my @output = ();
+my $total_cnt = 0;
 while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("%s || %s || %s || %s || %s ", $row->{'page_namespace'}, $namespace{$row->{'page_namespace'}}, ($row->{'notredir'} + $row->{'redir'}), $row->{'notredir'}, $row->{'redir'});
 	my $table_row = sprintf("| %s\n|-", $page_title);
+	if ($row->{'page_namespace'} eq 0) {
+		$total_cnt = $row->{'notredir'} + $row->{'redir'};
+	}
 	push @output, $table_row;
 }
 
 setlocale(LC_TIME, $^O eq 'MSWin32' ? "Korean_Korea.utf8" : "ko_KR.utf8");
 $ENV{TZ} = $timezone_area;
 my $current_of = localtime->strftime($timezone_str);;
+$current_of = "{{#if:{{{1|}}}|$total_cnt|" . $current_of . "}}";
 my $final_result = sprintf($report_template, $current_of, join("\n", @output));
 
 $cursor->finish();
