@@ -35,14 +35,20 @@ report_template = '''
 conn = MySQLdb.connect(host=host, db=dbname, read_default_file=default_file)
 cursor = conn.cursor()
 cursor.execute('''
+SELECT page_title
+FROM
+(
 SELECT DISTINCT
-  page_title
+  page_title, page_id
 FROM page
 JOIN pagelinks
 ON pl_from = page_id
 WHERE page_namespace = 0
-AND pl_namespace IN (2,3);
-''')
+AND pl_namespace IN (2,3)
+) AS t
+WHERE NOT EXISTS (SELECT 1 FROM categorylinks WHERE cl_from = page_id AND cl_to = '삭제_신청_문서')
+;
+'''.encode('utf-8'))
 
 i = 1
 output = []
