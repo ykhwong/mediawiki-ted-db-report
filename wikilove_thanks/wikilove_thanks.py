@@ -18,53 +18,53 @@ dbname='kowiki_p'
 default_file='~/replica.my.cnf'
 
 # Strings
-timezone_str = '%Y³â %-m¿ù %-dÀÏ (%a) %H:%M (KST)'
+timezone_str = '%Yë…„ %-mì›” %-dì¼ (%a) %H:%M (KST)'
 timezone_area = 'Asia/Seoul'
 report_template = '''
-¸¶Áö¸· °»½Å: <onlyinclude>%s</onlyinclude>.
+ë§ˆì§€ë§‰ ê°±ì‹ : <onlyinclude>%s</onlyinclude>.
 
-== À§Å°»ç¶ûÀ» ¸¹ÀÌ º¸³½ »ç¶÷ ==
+== ìœ„í‚¤ì‚¬ë‘ì„ ë§ì´ ë³´ë‚¸ ì‚¬ëŒ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ¼ø¹ø
-! »ç¿ëÀÚ
-! È½¼ö
+! ìˆœë²ˆ
+! ì‚¬ìš©ì
+! íšŸìˆ˜
 |-
 %s
 |}
 '''
 
 report_template2 = '''
-== À§Å°»ç¶ûÀ» ¸¹ÀÌ ¹ŞÀº »ç¶÷ ==
+== ìœ„í‚¤ì‚¬ë‘ì„ ë§ì´ ë°›ì€ ì‚¬ëŒ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ¼ø¹ø
-! »ç¿ëÀÚ
-! È½¼ö
+! ìˆœë²ˆ
+! ì‚¬ìš©ì
+! íšŸìˆ˜
 |-
 %s
 |}
 '''
 
 report_template3 = '''
-== °í¸¶¿ò(°¨»ç)À» ¸¹ÀÌ Ç¥ÇÑ »ç¶÷ ==
+== ê°ì‚¬ë¥¼ ë§ì´ í‘œí•œ ì‚¬ëŒ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ¼ø¹ø
-! »ç¿ëÀÚ
-! È½¼ö
+! ìˆœë²ˆ
+! ì‚¬ìš©ì
+! íšŸìˆ˜
 |-
 %s
 |}
 '''
 
 report_template4 = '''
-== °í¸¶¿ò(°¨»ç)À» ¸¹ÀÌ ¹ŞÀº »ç¶÷ ==
+== ê°ì‚¬ í‘œí˜„ì„ ë§ì´ ë°›ì€ ì‚¬ëŒ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ¼ø¹ø
-! »ç¿ëÀÚ
-! È½¼ö
+! ìˆœë²ˆ
+! ì‚¬ìš©ì
+! íšŸìˆ˜
 |-
 %s
 |}
@@ -87,7 +87,7 @@ SELECT
 i = 1
 output = []
 for row in cursor.fetchall():
-    page_title = '[[»ç¿ëÀÚ:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
+    page_title = '[[ì‚¬ìš©ì:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
     table_row = '''| %d
 | %s
 |-''' % (i, page_title)
@@ -109,7 +109,7 @@ SELECT
 i = 1
 output2 = []
 for row in cursor.fetchall():
-    page_title = '[[»ç¿ëÀÚ:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
+    page_title = '[[ì‚¬ìš©ì:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
     table_row = '''| %d
 | %s
 |-''' % (i, page_title)
@@ -130,7 +130,7 @@ LIMIT 100;
 i = 1
 output3 = []
 for row in cursor.fetchall():
-    page_title = '[[»ç¿ëÀÚ:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
+    page_title = '[[ì‚¬ìš©ì:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
     table_row = '''| %d
 | %s
 |-''' % (i, page_title)
@@ -149,7 +149,7 @@ LIMIT 100;
 i = 1
 output4 = []
 for row in cursor.fetchall():
-    page_title = '[[»ç¿ëÀÚ:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
+    page_title = '[[ì‚¬ìš©ì:%s|%s]] || %s' % (unicode(row[0], 'utf-8'), unicode(row[0], 'utf-8'), str(row[1]))
     table_row = '''| %d
 | %s
 |-''' % (i, page_title)
