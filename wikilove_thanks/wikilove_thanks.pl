@@ -11,53 +11,53 @@ my $dbname='kowiki_p';
 my $default_file='~/replica.my.cnf';
 
 # Strings
-my $timezone_str = '%Y³â %-m¿ù %-dÀÏ (%a) %H:%M (KST)';
+my $timezone_str = '%Yë…„ %-mì›” %-dì¼ (%a) %H:%M (KST)';
 my $timezone_area = 'Asia/Seoul';
 my $report_template = '
-¸¶Áö¸· °»½Å: <onlyinclude>%s</onlyinclude>
+ë§ˆì§€ë§‰ ê°±ì‹ : <onlyinclude>%s</onlyinclude>
 
-== À§Å°»ç¶ûÀ» ¸¹ÀÌ º¸³½ »ç¶÷ ==
+== ìœ„í‚¤ì‚¬ë‘ì„ ë§ì´ ë³´ë‚¸ ì‚¬ëŒ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ¼ø¹ø
-! »ç¿ëÀÚ
-! È½¼ö
+! ìˆœë²ˆ
+! ì‚¬ìš©ì
+! íšŸìˆ˜
 |-
 %s
 |}
 ';
 
 my $report_template2 = '
-== À§Å°»ç¶ûÀ» ¸¹ÀÌ ¹ŞÀº »ç¶÷ ==
+== ìœ„í‚¤ì‚¬ë‘ì„ ë§ì´ ë°›ì€ ì‚¬ëŒ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ¼ø¹ø
-! »ç¿ëÀÚ
-! È½¼ö
+! ìˆœë²ˆ
+! ì‚¬ìš©ì
+! íšŸìˆ˜
 |-
 %s
 |}
 ';
 
 my $report_template3 = '
-== °í¸¶¿ò(°¨»ç)À» ¸¹ÀÌ Ç¥ÇÑ »ç¶÷ ==
+== ê°ì‚¬ë¥¼ ë§ì´ í‘œí•œ ì‚¬ëŒ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ¼ø¹ø
-! »ç¿ëÀÚ
-! È½¼ö
+! ìˆœë²ˆ
+! ì‚¬ìš©ì
+! íšŸìˆ˜
 |-
 %s
 |}
 ';
 
 my $report_template4 = '
-== °í¸¶¿ò(°¨»ç)À» ¸¹ÀÌ ¹ŞÀº »ç¶÷ ==
+== ê°ì‚¬ í‘œí˜„ì„ ë§ì´ ë°›ì€ ì‚¬ëŒ ==
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! ¼ø¹ø
-! »ç¿ëÀÚ
-! È½¼ö
+! ìˆœë²ˆ
+! ì‚¬ìš©ì
+! íšŸìˆ˜
 |-
 %s
 |}
@@ -82,7 +82,7 @@ $cursor->execute();
 my $i = 1;
 my @output = ();
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $page_title = sprintf("[[»ç¿ëÀÚ:%s|%s]] || %d", $row->{'user_name'}, $row->{'user_name'}, $row->{'counts'});
+	my $page_title = sprintf("[[ì‚¬ìš©ì:%s|%s]] || %d", $row->{'user_name'}, $row->{'user_name'}, $row->{'counts'});
 	my $table_row = sprintf("| %d\n| %s\n|-", $i, $page_title);
 	push @output, $table_row;
 	$i++;
@@ -104,7 +104,7 @@ $cursor->execute();
 $i = 1;
 my @output2 = ();
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $page_title = sprintf("[[»ç¿ëÀÚ:%s|%s]] || %d", $row->{'user_name'}, $row->{'user_name'}, $row->{'counts'});
+	my $page_title = sprintf("[[ì‚¬ìš©ì:%s|%s]] || %d", $row->{'user_name'}, $row->{'user_name'}, $row->{'counts'});
 	my $table_row = sprintf("| %d\n| %s\n|-", $i, $page_title);
 	push @output2, $table_row;
 	$i++;
@@ -125,7 +125,7 @@ $cursor->execute();
 $i = 1;
 my @output3 = ();
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $page_title = sprintf("[[»ç¿ëÀÚ:%s|%s]] || %d", $row->{'user_name'}, $row->{'user_name'}, $row->{'counts'});
+	my $page_title = sprintf("[[ì‚¬ìš©ì:%s|%s]] || %d", $row->{'user_name'}, $row->{'user_name'}, $row->{'counts'});
 	my $table_row = sprintf("| %d\n| %s\n|-", $i, $page_title);
 	push @output3, $table_row;
 	$i++;
@@ -144,7 +144,7 @@ $cursor->execute();
 $i = 1;
 my @output4 = ();
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $page_title = sprintf("[[»ç¿ëÀÚ:%s|%s]] || %d", $row->{'user_name'}, $row->{'user_name'}, $row->{'counts'});
+	my $page_title = sprintf("[[ì‚¬ìš©ì:%s|%s]] || %d", $row->{'user_name'}, $row->{'user_name'}, $row->{'counts'});
 	my $table_row = sprintf("| %d\n| %s\n|-", $i, $page_title);
 	push @output4, $table_row;
 	$i++;
