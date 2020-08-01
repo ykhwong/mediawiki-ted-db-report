@@ -16,7 +16,7 @@ my $timezone_area = 'Asia/Seoul';
 my $report_template = '
 마지막 갱신: <onlyinclude>%s</onlyinclude>
 
-; 참고
+; 일반 문서 수의 집계 방식 참고
 {| class="wikitable"
 |+
 |<b>집계 분류</b>
