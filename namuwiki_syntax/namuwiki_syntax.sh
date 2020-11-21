@@ -61,7 +61,7 @@ echo "|}"
 
 CNT=1
 echo ''
-echo '== 외부 링크(https://namu.wiki)를 사용하는 문서 =='
+echo '== 외부 링크(namu.wiki)를 사용하는 문서 =='
 echo '동일 문서가 한국어 위키백과에 있다면 한국어 위키백과의 내부 링크로 수정해 주세요.'
 echo '{| class="wikitable sortable plainlinks" style="width:100%; margin:auto;"'
 echo '|- style="white-space:nowrap;"'
