@@ -1,6 +1,7 @@
 LANG=ko_KR.utf8
 UTIL='expr wget date sed perl grep cat'
 URL='https://ko.wikipedia.org/w/index.php?title=특수:검색&limit=5000&offset=0&profile=default&search=insource%3A%2F%28%5C%5B%5C%2A+%7C%5B%5E%5C%5B%5D%5C%5B%28목차%7C각주%7Cyoutube%29%5C%5D%7C%5C%7B%23색코드%7C%5C%5Binclude%5C%28%7C%5C%5Bbr%5C%5D%7C%5C%7B%5C%7B%5C%7B%5C%2B%5B0-9%5D%29%2F&advancedSearch-current=%7B"namespaces"%3A%5B0%5D%7D'
+URL2='https://ko.wikipedia.org/w/index.php?search=insource%3A%2Fhttps*%3A%5C%2F%5C%2Fnamu%5C.wiki%2F+-hastemplate%3A%22%ED%8A%B9%EC%A0%95%ED%8C%90+%EC%82%AD%EC%A0%9C+%EC%8B%A0%EC%B2%AD%22+-hastemplate%3A%22%EC%82%AD%EC%A0%9C+%EC%8B%A0%EC%B2%AD%22+-intitle%3A%2F%EC%9C%84%ED%82%A4%2F&title=%ED%8A%B9%EC%88%98%3A%EA%B2%80%EC%83%89&go=%EB%B3%B4%EA%B8%B0&ns0=1'
 CNT=1
 timezone_area='Asia/Seoul'
 timezone_str='%Y년 %-m월 %-d일 (%a) %H:%M (KST)'
@@ -51,6 +52,24 @@ IFS='
 '
 
 for sth in `wget -qO- $URL | perl -pe 's/title="/\ntitle="/mg' | grep -P '^title=' | perl -pe 's/(^title="|" +data-serp-pos=.*)//g' | grep -vP '>' | perl -pe 's/^\*+$//'`
+do
+	echo "| $CNT || [[${sth}]]"
+	echo "|-"
+	CNT=`expr $CNT + 1`
+done
+echo "|}"
+
+CNT=1
+echo ''
+echo '== 외부 링크(https://namu.wiki)를 사용하는 문서 =='
+echo '동일 문서가 한국어 위키백과에 있다면 한국어 위키백과의 내부 링크로 수정해 주세요.'
+echo '{| class="wikitable sortable plainlinks" style="width:100%; margin:auto;"'
+echo '|- style="white-space:nowrap;"'
+echo '! 순번 !! 문서 이름'
+echo '|-'
+IFS='
+'
+for sth in `wget -qO- $URL2 | perl -pe 's/title="/\ntitle="/mg' | grep -P '^title=' | perl -pe 's/(^title="|" +data-serp-pos=.*)//g' | grep -vP '>' | perl -pe 's/^\*+$//'`
 do
 	echo "| $CNT || [[${sth}]]"
 	echo "|-"
