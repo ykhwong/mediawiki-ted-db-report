@@ -18,9 +18,10 @@ my $report_template = '
 
 동음이의 성격의 괄호가 포함된 문서가 존재하지만 동음이의를 뒷받침해줄 문서가 존재하지 않습니다. 넘겨주기, 동음이의어 문서, 또는 일반적인 백과사전 내용의 문서로 생성해야 합니다.
 
+* 총 문서 수: %d개
+
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
-! 순번
 ! 괄호가 포함된 문서
 ! 생성이 필요한 문서
 |-
@@ -50,7 +51,7 @@ my $i = 1;
 my @output = ();
 while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("[[:%s]] || [[:%s]]", $row->{'title'}, $row->{'title2'});
-	my $table_row = sprintf("| %d\n| %s\n|-", $i, $page_title);
+	my $table_row = sprintf("| %s\n|-", $page_title);
 	push @output, $table_row;
 	$i++;
 }
@@ -58,10 +59,9 @@ while (my $row = $cursor->fetchrow_hashref()) {
 setlocale(LC_TIME, $^O eq 'MSWin32' ? "Korean_Korea.utf8" : "ko_KR.utf8");
 $ENV{TZ} = $timezone_area;
 my $current_of = localtime->strftime($timezone_str);;
-my $final_result = sprintf($report_template, $current_of, join("\n", @output));
+my $final_result = sprintf($report_template, $current_of, $i, join("\n", @output));
 
 $cursor->finish();
 $conn->disconnect();
 
 printf("%s", $final_result);
-
