@@ -9,6 +9,9 @@ my $host='kowiki.analytics.db.svc.eqiad.wmflabs';
 my $dbname='kowiki_p';
 my $default_file='~/replica.my.cnf';
 
+my @main_titles_with_redirect;
+my @draft_titles_with_redirect;
+
 # Strings
 my $timezone_str = '%Y년 %-m월 %-d일 (%a) %H:%M (KST)';
 my $timezone_area = 'Asia/Seoul';
@@ -35,18 +38,62 @@ FROM
 SELECT
         distinct(page_title) as draft_title
 FROM page
-  -- JOIN templatelinks
-  -- ON tl_from = page_id
 WHERE 
 page_namespace = 118
-  -- AND NOT tl_title = '삭제_신청'
-  -- AND page_is_redirect = 0
+) AS t
+WHERE EXISTS (
+        SELECT 1 FROM page
+        WHERE
+        page_namespace = 0
+        AND page_is_redirect = 1
+        AND page_title = t.draft_title
+);
+");
+$cursor->execute();
+while (my $row = $cursor->fetchrow_hashref()) {
+	my $draft_page = $row->{'draft_title'};
+	push @main_titles_with_redirect, $draft_page;
+}
+
+$cursor = $conn->prepare("
+SELECT draft_title
+FROM
+(
+SELECT
+        distinct(page_title) as draft_title
+FROM page
+WHERE 
+page_namespace = 118
+AND page_is_redirect = 1
+) AS t
+WHERE EXISTS (
+        SELECT 1 FROM page
+        WHERE
+        page_namespace = 0
+        AND page_title = t.draft_title
+);
+");
+$cursor->execute();
+while (my $row = $cursor->fetchrow_hashref()) {
+	my $draft_page = $row->{'draft_title'};
+	push @draft_titles_with_redirect, $draft_page;
+}
+
+
+$cursor = $conn->prepare("
+SELECT draft_title
+FROM
+(
+SELECT
+        distinct(page_title) as draft_title
+FROM page
+WHERE 
+page_namespace = 118
 ) AS t
 WHERE EXISTS (
 	SELECT 1 FROM page
 	WHERE
 	page_namespace = 0
-	-- AND page_is_redirect = 0
 	AND page_title = t.draft_title
 );
 ");
@@ -56,11 +103,22 @@ my $i = 1;
 my @output = ();
 while (my $row = $cursor->fetchrow_hashref()) {
 	my $draft_page = $row->{'draft_title'};
-	my $page_title = sprintf("[[:%s]] || [[초안:%s]]", $draft_page, $draft_page);
+	my $page_title;
+	$page_title .= "[[:$draft_page]]";
+	if ( grep( /^\Q$draft_page\E$/, @main_titles_with_redirect) ) {
+		$page_title .= ' <span style="background-color: #91ebff;">넘겨주기</span>';
+	}
+	$page_title .= " || [[초안:$draft_page]]";
+	if ( grep( /^\Q$draft_page\E$/, @draft_titles_with_redirect) ) {
+		$page_title .= ' <span style="background-color: #91ebff;">넘겨주기</span>';
+	}
+
+	#my $page_title = sprintf("[[:%s]] || [[초안:%s]]", $draft_page, $draft_page);
 	my $table_row = sprintf("| %d\n| %s\n|-", $i, $page_title);
 	push @output, $table_row;
 	$i++;
 }
+
 
 setlocale(LC_TIME, $^O eq 'MSWin32' ? "Korean_Korea.utf8" : "ko_KR.utf8");
 $ENV{TZ} = $timezone_area;
