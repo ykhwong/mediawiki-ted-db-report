@@ -47,7 +47,7 @@ SELECT * FROM
 ( SELECT page.page_title, image.img_width, image.img_height FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from JOIN image ON page.page_title=image.img_name JOIN revision_userindex ON page_id = rev_page WHERE rev_timestamp > 1 AND rev_parent_id = '0' AND page.page_namespace = 6 AND page.page_is_redirect = 0  AND
 categorylinks.cl_to = '비자유_로고' ) AS pt
 WHERE EXISTS (
-  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND (IMG_WIDTH*IMG_HEIGHT)>20000
+  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND (IMG_WIDTH*IMG_HEIGHT)>100000
 );
 ));
 
@@ -196,7 +196,7 @@ my $final_result = sprintf($report_template, $current_of);
 $final_result .= q(
 == 비자유 로고 ==
 * 참조: [[:분류:비자유 로고]]
-* 기준: 가로 세로의 곱을 20,000 픽셀을 초과 (저장 기준임. 표시 기준의 2배)
+* 기준: 가로 세로의 곱을 100,000 픽셀을 초과 (저장 기준임. 표시 기준의 2배)
 );
 $final_result .= sprintf($report_template1, join("\n", @output));
 
