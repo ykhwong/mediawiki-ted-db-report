@@ -540,6 +540,7 @@ sub _main {
 	given ($userword) {
 		when (/^A$/i) {
 			for (1 .. $cnt) {
+				printf("Processing: $_\n");
 				_perform($dirs{$_});
 			}
 		}
