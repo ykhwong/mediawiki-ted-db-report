@@ -6,14 +6,14 @@
 # Description: Bot operation for the database report
 # Author: Taewoong Yoo
 # Maintainer: Taewoong Yoo
-# Copyright (c) 2015-2018 Taewoong Yoo, all rights reserved.
+# Copyright (c) 2015-2021 Taewoong Yoo, all rights reserved.
 # Created: Oct 1 2015 01:00 PM Korea
 # Version: 0
 # Module-Requires: Term::ReadKey, MediaWiki::Bot, WWW::Mechanize, Text::Diff
-# Last-Updated: 6 Sep 2018 05:39 AM Korea
+# Last-Updated: 20 Apr 2021 05:39 AM Korea
 #           By: Taewoong Yoo
-#     Update #: 127
-#               [-] CLEAN UP
+#     Update #: 129
+#               [-] MINOR FIX
 #               [MOD] 
 # URL: https://github.com/ykhwong
 # Keywords: tedbot, bot, wiki, wikipedia, kowiki
@@ -41,7 +41,7 @@ if ($^O eq 'MSWin32' || $^O eq 'cygwin' || $^O eq 'dos') {
 }
 
 package common_vars;
-my $VERSION = "TedKoWiki 20180906_r1";
+my $VERSION = "TedKoWiki 20210420_r1";
 my ($config_file, $log_file, $diff_file) = ('wiki.conf',  'log.txt', 'diff.diff');
 my $mechanize_agent = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_4; en-us) AppleWebKit/533.17.8 (KHTML, like Gecko) Version/5.0.1 Safari/533.17.8';
 my $bot_agent = 'PerlWikiBot/%s (https://metacpan.org/MediaWiki::Bot; User:%s)';
@@ -301,13 +301,13 @@ sub _edit {
 	my ($title, $wikitext_changed, $summary_text) = @_;
 	my $rep_inp;
 	if ($wikitext_changed =~ /\{\{ *nobots *\}\}|\{\{bots *\| *allow=none\}\}\E|\{\{ *bots *\| *deny=all\}\}|\{\{ *bots *\| *deny=$bot_userid\}\}/) {
-		util::_nprint(sprintf("nobots 틀 존재하므로 무시: %s\n", $title));
+		util::_nprint(sprintf("nobots 틀이 존재하므로 무시: %s\n", $title));
 		return;
 	}
 	if ($wikitext_changed =~ /\{\{(bots|allow)=(\S+)/) {
 		my $allowbot = $1;
 		if ($allowbot !~ /^$bot_userid$/) {
-			util::_nprint(sprintf("nobots 틀 존재하므로 무시: %s\n", $title));
+			util::_nprint(sprintf("nobots 틀이 존재하므로 무시: %s\n", $title));
 			return;
 		}
 	}
@@ -554,7 +554,7 @@ sub _main {
 
 __END__
 
-Copyright 2015-2018 TedKoWiki
+Copyright 2015-2021 TedKoWiki
 This script file was created by User:Ykhwong from ko.wikipedia.org
 Tested with Perl 5 version 20 subversion 3 on MS-Windows / Linux
 
