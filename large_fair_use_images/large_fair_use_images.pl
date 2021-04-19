@@ -15,6 +15,7 @@ my $timezone_str = '%Y년 %-m월 %-d일 (%a) %H:%M (KST)';
 my $timezone_area = 'Asia/Seoul';
 my $report_template = q(
 마지막 갱신: <onlyinclude>%s</onlyinclude>
+
 아래는 [[위키백과:비자유_저작물의_공정한_이용#이미지]]에서 설명하는 비자유 그림 중에 지나치게 큰 크기의 그림 파일을 나열합니다. (저장 기준임. 표시 기준의 2배)
 );
 
