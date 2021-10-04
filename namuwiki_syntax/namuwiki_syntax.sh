@@ -51,7 +51,7 @@ echo '|-'
 IFS='
 '
 
-for sth in `wget -qO- $URL | perl -pe 's/title="/\ntitle="/mg' | grep -P '^title=' | perl -pe 's/(^title="|" +data-serp-pos=.*)//g' | grep -vP '>' | perl -pe 's/^\*+$|(More options|더 많은 옵션)"//'`
+for sth in `wget -qO- $URL | perl -pe 's/title="/\ntitle="/mg' | grep -P '^title=' | perl -pe 's/(^title="|" +data-serp-pos=.*)//g' | grep -vP '>|\[' | perl -pe 's/^\*+$|(More options|더 많은 옵션)"//'`
 do
 	echo "| $CNT || [[${sth}]]"
 	echo "|-"
@@ -69,7 +69,7 @@ echo '! 순번 !! 문서 이름'
 echo '|-'
 IFS='
 '
-for sth in `wget -qO- $URL2 | perl -pe 's/title="/\ntitle="/mg' | grep -P '^title=' | perl -pe 's/(^title="|" +data-serp-pos=.*)//g' | grep -vP '>' | perl -pe 's/^\*+$|(More options|더 많은 옵션)"//'`
+for sth in `wget -qO- $URL2 | perl -pe 's/title="/\ntitle="/mg' | grep -P '^title=' | perl -pe 's/(^title="|" +data-serp-pos=.*)//g' | grep -vP '>|\[' | perl -pe 's/^\*+$|(More options|더 많은 옵션)"//'`
 do
 	echo "| $CNT || [[${sth}]]"
 	echo "|-"
