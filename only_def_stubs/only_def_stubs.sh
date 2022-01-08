@@ -1,7 +1,7 @@
 LANG=ko_KR.utf8
 UTIL='expr wget date sed perl grep'
-URL1='https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EA%B2%80%EC%83%89&limit=5000&offset=0&profile=default&search=hastemplate%3A%22%ED%86%A0%EB%A7%89%EA%B8%80%22+insource%3A%2F%5B%EA%B0%80-%ED%9E%A3%5D%5C.%2F+insource%3A%2F%28%EC%9D%80%7C%EB%8A%94%29+%2F+-insource%3A%2F%5B%EA%B0%80-%ED%9E%A3%5D%5C..%2A%5B%EA%B0%80-%ED%9E%A3%5D%5C.%2F+-insource%3A%2F%5C%2A%7C%3D%3D%2F&advancedSearch-current={}'
-URL2='https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EA%B2%80%EC%83%89&limit=5000&offset=5000&profile=default&search=hastemplate%3A%22%ED%86%A0%EB%A7%89%EA%B8%80%22+insource%3A%2F%5B%EA%B0%80-%ED%9E%A3%5D%5C.%2F+insource%3A%2F%28%EC%9D%80%7C%EB%8A%94%29+%2F+-insource%3A%2F%5B%EA%B0%80-%ED%9E%A3%5D%5C..%2A%5B%EA%B0%80-%ED%9E%A3%5D%5C.%2F+-insource%3A%2F%5C%2A%7C%3D%3D%2F&advancedSearch-current={}'
+URL1='https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EA%B2%80%EC%83%89&limit=5000&offset=0&profile=default&search=hastemplate%3A%22%ED%86%A0%EB%A7%89%EA%B8%80%22+insource%3A%2F%5B%EA%B0%80-%ED%9E%A3%5D%5C.%2F+insource%3A%2F%28%EC%9D%80%7C%EB%8A%94%29+%2F+-insource%3A%2F%5B%EA%B0%80-%ED%9E%A3%5D%5C..%2B%5B%EA%B0%80-%ED%9E%A3%5D%5C.%2F+-insource%3A%2F%5C%2A%7C%3D%3D%2F'
+URL2='https://ko.wikipedia.org/w/index.php?title=%ED%8A%B9%EC%88%98:%EA%B2%80%EC%83%89&limit=5000&offset=5000&profile=default&search=hastemplate%3A%22%ED%86%A0%EB%A7%89%EA%B8%80%22+insource%3A%2F%5B%EA%B0%80-%ED%9E%A3%5D%5C.%2F+insource%3A%2F%28%EC%9D%80%7C%EB%8A%94%29+%2F+-insource%3A%2F%5B%EA%B0%80-%ED%9E%A3%5D%5C..%2B%5B%EA%B0%80-%ED%9E%A3%5D%5C.%2F+-insource%3A%2F%5C%2A%7C%3D%3D%2F'
 CNT=1
 timezone_area='Asia/Seoul'
 timezone_str='%Y년 %-m월 %-d일 (%a) %H:%M (KST)'
