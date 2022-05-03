@@ -5,10 +5,11 @@ use POSIX qw(tzset);
 use POSIX qw(locale_h);
 use locale;
 use DBI;
+use User::pwent;
 
 my $host='kowiki.analytics.db.svc.eqiad.wmflabs';
 my $dbname='kowiki_p';
-my $default_file='~/replica.my.cnf';
+my $default_file=getpwuid($<)->dir . "/replica.my.cnf";
 
 # Strings
 my $timezone_str = '%Y년 %-m월 %-d일 (%a) %H:%M (KST)';
