@@ -1,6 +1,6 @@
 LANG=ko_KR.utf8
 UTIL='expr wget date sed perl grep cat'
-URL3='https://ko.wikipedia.org/w/index.php?search=insource%3A%2F%5C%7B%5C%7B+%2A%28%EC%82%AC%EC%9A%A9%EC%9E%90%7CUser%7C%EC%82%AC%29+%2A%3A+%2A%5B%5E%5C%7C%5D%2B%2Fi&title=%ED%8A%B9%EC%88%98:%EA%B2%80%EC%83%89&profile=advanced&fulltext=1&ns0=1'
+URL3='https://ko.wikipedia.org/w/index.php?search=insource%3A%2F%5C%7B%5C%7B+*%28%EC%82%AC%EC%9A%A9%EC%9E%90%7CUser%7C%EC%82%AC%29+*%3A+*%5B%5E%5C%7C%5D%2B%2Fi&title=%ED%8A%B9%EC%88%98%3A%EA%B2%80%EC%83%89&profile=advanced&fulltext=1&ns0=1&ns14=1';
 CNT=1
 timezone_area='Asia/Seoul'
 timezone_str='%Y년 %-m월 %-d일 (%a) %H:%M (KST)'
