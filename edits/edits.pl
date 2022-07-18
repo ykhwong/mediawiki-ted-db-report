@@ -43,7 +43,7 @@ foreach my $ls (split /\n/, $bot_ko->get_text(decode('utf-8', "鞙勴偆氚标臣:旮办
 	}
 	if ($hold eq 1 && $ls !~ /^\s*\<\/pre\>/i) {
 		$ls =~ s/ +/_/g;
-		push @placeholder, $ls;
+		push @placeholder, (encode('utf-8', $ls));
 	}
 }
 
@@ -55,7 +55,7 @@ foreach my $ls (split /\n/, $bot_ko->get_text(decode('utf-8', "鞙勴偆氚标臣:旮办
 	}
 	if ($hold eq 1 && $ls !~ /^\s*\<\/pre\>/i) {
 		$ls =~ s/ +/_/g;
-		push @excluded, $ls;
+		push @excluded, (encode('utf-8', $ls));
 	}
 
 }
