@@ -84,9 +84,6 @@ foreach my $ls (split /\n/, $tmp_list) {
 	if ($right =~ /bot/) {
 		next;
 	}
-	if ($cur_name2 =~ /(bot|봇)$/i) {
-		next;
-	}
 
 	my $skip = 0;
 	foreach my $itm (@excluded) {
