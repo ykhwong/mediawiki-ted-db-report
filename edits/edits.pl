@@ -63,6 +63,7 @@ foreach my $ls (split /\n/, $bot_ko->get_text(decode('utf-8', "위키백과:기�
 setlocale(LC_TIME, $^O eq 'MSWin32' ? "Korean_Korea.utf8" : "ko_KR.utf8");
 $ENV{TZ} = $timezone_area;
 my $current_of = localtime->strftime($timezone_str);
+print "== 편집 횟수에 따른 사용자 목록 ==\n";
 print "* 갱신 일자: " . $current_of . "\n";
 
 my $working = 0;
@@ -155,4 +156,57 @@ foreach my $ls (split /\n/, $wikitext) {
 	$newWikitext .= $ls . "\n";
 }
 
+$cursor = $conn->prepare("
+SELECT DISTINCT actor_name, COUNT(page_title) AS cnt
+FROM page p
+JOIN revision r ON p.page_id = r.rev_page
+JOIN actor a ON a.actor_id = r.rev_actor
+WHERE r.rev_parent_id = '0'
+AND p.page_namespace = '0'
+AND p.page_is_redirect = '0'
+AND NOT IS_IPV4(actor_name)
+AND NOT IS_IPV6(actor_name)
+AND NOT EXISTS (SELECT 1 from user_groups WHERE ug_user=actor_user and LOWER(ug_group) = 'bot')
+GROUP BY actor_name
+HAVING cnt > 100
+ORDER BY cnt DESC;
+");
+$cursor->execute();
+
+$rows = $cursor->rows;
+$tmp_list = "";
+while (my $row = $cursor->fetchrow_hashref()) {
+	$tmp_list .= $row->{'actor_name'} . "\t" . $row->{"cnt"} . "\n";
+}
+
 print $newWikitext . "\n";
+print "== 신규 문서 작성 수에 따른 사용자 목록 ==\n";
+print "* 갱신 일자: " . $current_of . "\n";
+
+foreach my $ls (split /\n/, $tmp_list) {
+	my $cur_name = (split /\t/, $ls)[0];
+	my $cur_name2 = $cur_name; $cur_name2 =~ s/ +/_/g;
+	my $contrib = (split /\t/, $ls)[1];
+	my $is_placeholder = 0;
+	my $skip = 0;
+	foreach my $itm (@excluded) {
+		if ($itm eq ${cur_name2}) {
+			$skip = 1;
+			last;
+		}
+	}
+	if ($skip eq 1) {
+		next;
+	}
+	foreach my $itm (@placeholder) {
+		if ($itm eq ${cur_name2}) {
+			$is_placeholder = 1;
+			last;
+		}
+	}
+	if ($is_placeholder eq 0) {
+		print "# ($contrib건) {{사용자2|$cur_name}}\n";
+	} else {
+		print "# ($contrib건) [자리 채움]\n";
+	}
+}
