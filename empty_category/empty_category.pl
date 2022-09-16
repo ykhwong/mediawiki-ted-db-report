@@ -55,15 +55,17 @@ AND NOT EXISTS (SELECT
 AND NOT EXISTS (SELECT
                   1
                 FROM templatelinks
+                JOIN linktarget on tl_target_id = lt_id
                 WHERE tl_from = page_id
-                AND tl_namespace = 10
-                AND tl_title = '추적용_분류')
+                AND lt_namespace = 10
+                AND lt_title = '추적용_분류')
 AND NOT EXISTS (SELECT
                   1
                 FROM templatelinks
+                JOIN linktarget on tl_target_id = lt_id
                 WHERE tl_from = page_id
-                AND tl_namespace = 10
-                AND tl_title = '빈_분류');
+                AND lt_namespace = 10
+                AND lt_title = '빈_분류');
 ");
 $cursor->execute();
 
