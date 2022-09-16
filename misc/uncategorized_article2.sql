@@ -2,8 +2,7 @@ SELECT
   page_title,
   page_len,
   cat_pages,
-  rev_timestamp,
-  rev_user_text
+  rev_timestamp
 FROM revision
 JOIN
 (SELECT
@@ -24,8 +23,7 @@ AND rev_timestamp = (SELECT
                        MAX(rev_timestamp)
                      FROM revision AS last 
                      WHERE last.rev_page = pagetmp.page_id)
-WHERE NOT EXISTS (SELECT 1 FROM templatelinks WHERE tl_from = page_id AND tl_namespace = 10
-AND ( tl_title = '분류_필요' )
+WHERE NOT EXISTS (SELECT 1 FROM templatelinks JOIN linktarget on tl_target_id = lt_id WHERE tl_from = page_id AND lt_namespace = 10
+AND ( lt_title = '분류_필요' )
 )
 ;
-
