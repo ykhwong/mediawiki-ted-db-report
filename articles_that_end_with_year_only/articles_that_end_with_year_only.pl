@@ -24,6 +24,7 @@ my $report_template = '
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
 ! 문서
+! 식별자 제외 제목
 |-
 %s
 |}
@@ -45,7 +46,10 @@ $cursor->execute();
 my @output = ();
 my $cnt = 0;
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $page_title = sprintf("[[:%s]]", $row->{'page_title'});
+	my $p_title = $row->{'page_title'};
+	my $p_title2 = $p_title;
+	$p_title2 =~ s/_\(.*//;
+	my $page_title = sprintf("[[:%s]] || [[:%s]]", $p_title, $p_title2);
 	my $table_row = sprintf("| %s\n|-", $page_title);
 	$cnt++;
 	push @output, $table_row;
