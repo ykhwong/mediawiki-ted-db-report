@@ -38,7 +38,7 @@ ON cl_from = page_id
 WHERE page_namespace = 0
 and page_is_redirect = 0
 and page_title REGEXP '_\\\\(.*\\\\)$'
-and NOT EXISTS (select pl_from from pagelinks where pl_namespace = 0 and page_title = pl_title)
+and NOT EXISTS (select pl_from from pagelinks where pl_from_namespace = 0 and page_title = pl_title)
 and NOT CL_TO REGEXP '^(삭제_신청_문서|위키백과_넘나들기|식별자_넘겨주기)$'
 ;
 ");
