@@ -64,7 +64,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	} else {
 		$sitewide = "예";
 	}
-	my $table_row = sprintf("| %d || %s || %s || %s || %s || %s || %s\n|-", $i, $ip, $actor, $timestamp, $expiry, $comment, $sitewide);
+	my $table_row = sprintf("| %d || %s || %s || %s || %s || %s \n|| %s\n|-", $i, $ip, $actor, $timestamp, $expiry, $comment, $sitewide);
 	push @output, $table_row;
 	$i++;
 }
