@@ -20,7 +20,7 @@ export TZ=":${timezone_area}"
 DATE=`date +"${timezone_str}"`
 echo '마지막 갱신: <onlyinclude>'$DATE'</onlyinclude>'
 echo ''
-echo '나무위키 문법이 포함되었거나 포함되었다고 의심되는 문서들입니다. 위키백과에 맞는 문법으로 수정해 주세요. ([[위키백과:다른 사이트에서 오신 분들께 드리는 말씀/나무위키]] 참고)'
+echo '더 시드 문법이 포함되었거나 포함되었다고 의심되는 문서들입니다. 위키백과에 맞는 문법으로 수정해 주세요. ([[위키백과:다른 사이트에서 오신 분들께 드리는 말씀/나무위키|참고 링크]])'
 cat <<"END"
 {| class="wikitable" style="text-align:center; width: 750px;"
 ! width="300px" | 더 시드 문법
