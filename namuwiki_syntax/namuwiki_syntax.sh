@@ -89,6 +89,11 @@ cat <<"END"
 |-
 |<code><nowiki>[[https://example.org|예제]]</nowiki></code>||<code><nowiki>[https://example.org 예제]</nowiki></code>
 |}
+
+{| class="wikitable sortable plainlinks" style="width:100%; margin:auto;"
+|- style="white-space:nowrap;"
+! 순번 !! 문서 이름
+|-
 END
 IFS='
 '
