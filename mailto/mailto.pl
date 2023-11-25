@@ -33,7 +33,7 @@ SELECT DISTINCT
 FROM externallinks
 JOIN page
 ON el_from = page_id
-WHERE el_to LIKE 'mailto:%'
+WHERE el_to_domain_index LIKE 'mailto:%'
 AND page_namespace = 0
 LIMIT 1000;
 ");
