@@ -35,9 +35,10 @@ SELECT page_title,
   FROM imagelinks
   WHERE il_to = page_title) AS imagelinks,
   (SELECT COUNT(*)
-  FROM pagelinks
-  WHERE pl_namespace = 6
-    AND pl_title = page_title) AS links
+  FROM linktarget
+  JOIN pagelinks ON lt_id = pl_target_id
+  WHERE lt_namespace = 6
+    AND lt_title = page_title) AS links
 FROM page
 WHERE page_namespace = 6
   AND page_is_redirect = 1
@@ -48,10 +49,10 @@ $cursor->execute();
 my $i = 1;
 my @output = ();
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $page_title = sprintf('<span class="plainlinks">[{{fullurl:File:%s|redirect=no}} %s]</span>', $row->{'page_title'}, $row->{'page_title'});
-	my $table_row = sprintf("| %d\n| %s\n| %s\n| %s\n|-", $i, $page_title, $row->{'imagelinks'}, $row->{'links'});
-	push @output, $table_row;
-	$i++;
+        my $page_title = sprintf('<span class="plainlinks">[{{fullurl:File:%s|redirect=no}} %s]</span>', $row->{'page_title'}, $row->{'page_title'});
+        my $table_row = sprintf("| %d\n| %s\n| %s\n| %s\n|-", $i, $page_title, $row->{'imagelinks'}, $row->{'links'});
+        push @output, $table_row;
+        $i++;
 }
 
 setlocale(LC_TIME, $^O eq 'MSWin32' ? "Korean_Korea.utf8" : "ko_KR.utf8");
@@ -63,4 +64,3 @@ $cursor->finish();
 $conn->disconnect();
 
 printf("%s", $final_result);
-
