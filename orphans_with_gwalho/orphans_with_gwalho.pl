@@ -38,7 +38,8 @@ ON cl_from = page_id
 WHERE page_namespace = 0
 and page_is_redirect = 0
 and page_title REGEXP '_\\\\(.*\\\\)$'
-and NOT EXISTS (select pl_from from pagelinks where pl_from_namespace = 0 and page_title = pl_title)
+and NOT EXISTS
+  (select pl_from from linktarget JOIN pagelinks ON lt_id = pl_target_id where pl_from_namespace = 0 and page_title = lt_title )
 and NOT CL_TO REGEXP '^(삭제_신청_문서|위키백과_넘나들기|식별자_넘겨주기)$'
 ;
 ");
@@ -47,13 +48,13 @@ $cursor->execute();
 my @output = ();
 my $cnt = 0;
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $p_title = $row->{'page_title'};
-	my $p_title2 = $p_title;
-	$p_title2 =~ s/_\(.*//;
-	my $page_title = sprintf("[[:%s]] || [[:%s]]", $p_title, $p_title2);
-	my $table_row = sprintf("| %s\n|-", $page_title);
-	$cnt++;
-	push @output, $table_row;
+        my $p_title = $row->{'page_title'};
+        my $p_title2 = $p_title;
+        $p_title2 =~ s/_\(.*//;
+        my $page_title = sprintf("[[:%s]] || [[:%s]]", $p_title, $p_title2);
+        my $table_row = sprintf("| %s\n|-", $page_title);
+        $cnt++;
+        push @output, $table_row;
 }
 
 setlocale(LC_TIME, $^O eq 'MSWin32' ? "Korean_Korea.utf8" : "ko_KR.utf8");
