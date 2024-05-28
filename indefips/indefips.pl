@@ -48,7 +48,8 @@ JOIN comment
 ON bl_reason_id = comment_id
 JOIN actor
 ON bl_by_actor = actor_id
-WHERE bt_user IS NULL AND bt_address REGEXP "\/";
+WHERE bl_expiry = "infinity" AND bt_user is NULL
+AND NOT comment_text REGEXP "(proxy|Proxy|VPN|토르|Tor|^tor|프록시)";
 ');
 $cursor->execute();
 
