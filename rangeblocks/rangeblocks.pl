@@ -35,30 +35,32 @@ my $report_template = '
 my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
 my $cursor = $conn->prepare('
 SELECT DISTINCT
-  ipb_address,
+  bt_address,
   actor_name,
-  ipb_timestamp,
-  ipb_expiry,
+  bl_timestamp,
+  bl_expiry,
   comment_text,
-  ipb_sitewide
-FROM ipblocks
+  bl_sitewide
+FROM block
+JOIN block_target
+ON bl_target = bt_id
 JOIN comment
-ON ipb_reason_id = comment_id
+ON bl_reason_id = comment_id
 JOIN actor
-ON ipb_by_actor = actor_id
-WHERE ipb_user = 0 AND ipb_address REGEXP "\/"
+ON bl_by_actor = actor_id
+WHERE bt_user IS NULL AND bt_address REGEXP "\/"
 ');
 $cursor->execute();
 
 my $i = 1;
 my @output = ();
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $ip = sprintf("[[사용자토론:%s|%s]]", $row->{'ipb_address'}, $row->{'ipb_address'});
+	my $ip = sprintf("[[사용자토론:%s|%s]]", $row->{'bt_address'}, $row->{'bt_address'});
 	my $actor = $row->{'actor_name'};
-	my $timestamp = $row->{'ipb_timestamp'};
-	my $expiry = $row->{'ipb_expiry'};
+	my $timestamp = $row->{'bl_timestamp'};
+	my $expiry = $row->{'bl_expiry'};
 	my $comment = $row->{'comment_text'};
-	my $sitewide = $row->{'ipb_sitewide'};
+	my $sitewide = $row->{'bl_sitewide'};
 	if ($sitewide =~ /1/) {
 		$sitewide = "아니오";
 	} else {
