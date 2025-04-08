@@ -32,7 +32,6 @@ my $report_template = '
 {| class="wikitable sortable plainlinks" style="width:100%%; margin:auto;"
 |- style="white-space:nowrap;"
 ! 문서
-! 넘겨주기 여부
 |-
 %s
 |}
@@ -55,7 +54,10 @@ $cursor->execute();
 my @output = ();
 my $cnt = 0;
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $page_title = sprintf("[[:%s]] || %s", $row->{'page_title'}, $row->{'page_is_redirect'} ? "넘겨주기" : "");
+	my $page_title = sprintf("[[:%s]]", $row->{'page_title'});
+	if ($row->{'page_is_redirect'}) {
+		$page_title .= ' <span style="background-color: #91ebff;">넘겨주기</span>';
+	}
 	my $table_row = sprintf("| %s\n|-", $page_title);
 	$cnt++;
 	push @output, $table_row;
