@@ -54,10 +54,10 @@ do
 				SEARCHMATCH=`echo $sth2 | perl -pe 's/.*\Q<span class="searchmatch">\E//mg' | perl -pe 's/<\/span>.*//'`
 			done
 			if [ `echo ${SEARCHMATCH} | grep -cP '^-$'` -ne 0 ]; then
-				echo -n "| $CNT || [[${TITLE}]] || "
+				echo -n "| $CNT || [[:${TITLE}]] || "
 				HOLD=1
 			else
-				echo "| $CNT || [[${TITLE}]] || <nowiki>${SEARCHMATCH}</nowiki>"
+				echo "| $CNT || [[:${TITLE}]] || <nowiki>${SEARCHMATCH}</nowiki>"
 				echo "|-"
 			fi
 			CNT=`expr $CNT + 1`

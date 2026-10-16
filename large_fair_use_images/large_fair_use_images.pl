@@ -5,6 +5,7 @@ use POSIX qw(tzset);
 use POSIX qw(locale_h);
 use locale;
 use DBI;
+use Encode qw(decode);
 use User::pwent;
 
 my $host='kowiki.analytics.db.svc.eqiad.wmflabs';
@@ -33,20 +34,32 @@ my $report_template1 = q(
 |}
 );
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
 
-my $cursor = $conn->prepare(q(
-SELECT * FROM
-( SELECT page.page_title, image.img_width, image.img_height FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from JOIN image ON page.page_title=image.img_name JOIN revision_userindex ON page_id = rev_page WHERE rev_timestamp > 1 AND rev_parent_id = '0' AND page.page_namespace = 6 AND page.page_is_redirect = 0  AND
-categorylinks.cl_to = '비자유_로고' ) AS pt
-WHERE EXISTS (
-  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND ((IMG_WIDTH*IMG_HEIGHT)>100000 OR
-( IMG_WIDTH > IMG_HEIGHT AND IMG_WIDTH>1000 ) OR 
-( IMG_WIDTH < IMG_HEIGHT AND IMG_HEIGHT>1000 ) OR
-( IMG_WIDTH = IMG_HEIGHT AND IMG_HEIGHT>1000 )
-)
-);
+# 분류(들)에 속한 파일 중 크기 조건을 만족하는 것을 구하는 SQL
+# - categorylinks.cl_to는 MediaWiki 1.45에서 제거됨 -> cl_target_id + linktarget 사용
+# - DBD::MariaDB는 SQL 문을 문자열(Unicode)로 받으므로 한국어 리터럴은 decode 후 전달
+sub fair_use_sql {
+	my ($categories, $size_cond) = @_;
+	my $in = join(', ', map { "'$_'" } @$categories);
+	return decode('UTF-8', qq(
+SELECT DISTINCT page_title, img_width, img_height
+FROM page
+JOIN categorylinks ON cl_from = page_id
+JOIN linktarget ON cl_target_id = lt_id
+JOIN image ON img_name = page_title
+WHERE page_namespace = 6
+AND page_is_redirect = 0
+AND lt_namespace = 14
+AND lt_title IN ($in)
+AND img_major_mime = 'image'
+AND ( $size_cond )
+ORDER BY page_title;
 ));
+}
+
+my $cursor = $conn->prepare(fair_use_sql(['비자유_로고'],
+	'img_width * img_height > 100000 OR GREATEST(img_width, img_height) > 1000'));
 
 $cursor->execute();
 
@@ -63,14 +76,8 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	$i++;
 }
 
-$cursor = $conn->prepare(q(
-SELECT * FROM
-( SELECT page.page_title, image.img_width, image.img_height FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from JOIN image ON page.page_title=image.img_name JOIN revision_userindex ON page_id = rev_page WHERE rev_timestamp > 1 AND rev_parent_id = '0' AND page.page_namespace = 6 AND page.page_is_redirect = 0  AND
-categorylinks.cl_to = '비자유_건축물' ) AS pt
-WHERE EXISTS (
-  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND ((IMG_WIDTH*IMG_HEIGHT)>200000 OR IMG_WIDTH>400 OR IMG_HEIGHT>1200)
-);
-));
+$cursor = $conn->prepare(fair_use_sql(['비자유_건축물'],
+	'img_width * img_height > 200000 OR img_width > 400 OR img_height > 1200'));
 
 $cursor->execute();
 
@@ -85,18 +92,8 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	push @output2, $table_row;
 	$i++;
 }
-$cursor = $conn->prepare(q(
-SELECT * FROM
-( SELECT page.page_title, image.img_width, image.img_height FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from JOIN image ON page.page_title=image.img_name JOIN revision_userindex ON page_id = rev_page WHERE rev_timestamp > 1 AND rev_parent_id = '0' AND page.page_namespace = 6 AND page.page_is_redirect = 0  AND
-categorylinks.cl_to = '음반_표지' ) AS pt
-WHERE EXISTS (
-  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND (
-   ( IMG_WIDTH > IMG_HEIGHT AND IMG_HEIGHT > 500 ) OR
-   ( IMG_WIDTH < IMG_HEIGHT AND IMG_WIDTH > 500 ) OR
-   ( IMG_WIDTH = IMG_HEIGHT AND IMG_WIDTH > 500 )
-  )
-);
-));
+$cursor = $conn->prepare(fair_use_sql(['비자유_음반_표지'],
+	'LEAST(img_width, img_height) > 500'));
 
 $cursor->execute();
 
@@ -118,17 +115,11 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	$i++;
 }
 
-$cursor = $conn->prepare(q(
-SELECT DISTINCT * FROM
-( SELECT page.page_title, image.img_width, image.img_height FROM page JOIN categorylinks ON page.page_id = categorylinks.cl_from JOIN image ON page.page_title=image.img_name JOIN revision_userindex ON page_id = rev_page WHERE rev_timestamp > 1 AND rev_parent_id = '0' AND page.page_namespace = 6 AND page.page_is_redirect = 0  AND
-( categorylinks.cl_to = '영화_장면' OR categorylinks.cl_to = '뮤직_비디오_장면' OR categorylinks.cl_to = '비자유_웹_페이지_스크린샷' OR categorylinks.cl_to = '텔레비전_장면' OR
-  categorylinks.cl_to = '마이크로소프트_제품의_스크린샷' OR categorylinks.cl_to = '맥_소프트웨어의_스크린샷' OR categorylinks.cl_to = '비자유_비디오_게임_스크린샷' OR
-  categorylinks.cl_to = '비자유_소프트웨어_스크린샷' OR categorylinks.cl_to = '윈도우_소프트웨어의_스크린샷'
- ) ) AS pt
-WHERE EXISTS (
-  SELECT 1 FROM image WHERE pt.page_title=img_name AND IMG_MAJOR_MIME='image' AND (IMG_WIDTH*IMG_HEIGHT)>80000
-);
-));
+$cursor = $conn->prepare(fair_use_sql([
+	'영화_장면', '뮤직_비디오_장면', '비자유_웹_페이지_스크린샷', '텔레비전_장면',
+	'마이크로소프트_제품의_스크린샷', '맥_소프트웨어의_스크린샷', '비자유_비디오_게임_스크린샷',
+	'비자유_소프트웨어_스크린샷', '윈도우_소프트웨어의_스크린샷'],
+	'img_width * img_height > 80000'));
 
 $cursor->execute();
 
@@ -167,7 +158,7 @@ $final_result .= sprintf($report_template1, join("\n", @output2));
 
 $final_result .= q(
 == 음반 표지 사진 ==
-* 참조: [[:분류:음반 표지]]
+* 참조: [[:분류:비자유 음반 표지]]
 * 기준: 가로, 세로 중 짧은 것을 기준으로 500 픽셀을 초과 (저장 기준임. 표시 기준의 2배)
 );
 $final_result .= sprintf($report_template1, join("\n", @output3));
@@ -183,3 +174,4 @@ $cursor->finish();
 $conn->disconnect();
 
 printf("%s", $final_result);
+

@@ -5,6 +5,7 @@ use POSIX qw(tzset);
 use POSIX qw(locale_h);
 use locale;
 use DBI;
+use Encode qw(decode);
 use User::pwent;
 
 my $host='kowiki.analytics.db.svc.eqiad.wmflabs';
@@ -37,8 +38,9 @@ my $report_template = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
-my $cursor = $conn->prepare(q"
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
+# DBD::MariaDB는 SQL 문을 문자열(Unicode)로 받으므로 한국어 리터럴은 decode 후 전달
+my $cursor = $conn->prepare(decode('UTF-8', q"
 SELECT
         page_title,
 	page_is_redirect
@@ -46,9 +48,10 @@ FROM page
 WHERE page_namespace = 0
 AND page_title REGEXP '[^_]\\\\(.+\\\\)$'
 AND page_title NOT REGEXP '_\\\\('
-AND page_title NOT REGEXP '\\\\(주\\\\)$'
+AND page_title NOT REGEXP '\\\\(주\\\\)'
+ORDER BY page_title
 ;
-");
+"));
 $cursor->execute();
 
 my @output = ();

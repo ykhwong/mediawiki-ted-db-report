@@ -26,7 +26,7 @@ my $report_template = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
 my $cursor = $conn->prepare("
 SELECT DISTINCT
   page_title
@@ -35,6 +35,7 @@ JOIN page
 ON el_from = page_id
 WHERE el_to_domain_index LIKE 'mailto:%'
 AND page_namespace = 0
+ORDER BY page_title
 LIMIT 1000;
 ");
 $cursor->execute();

@@ -40,16 +40,15 @@ my $report_template2 = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
 my $cursor = $conn->prepare("
 SELECT
-        '토론' AS ns_name,
         REPLACE(SUBSTRING_INDEX(page_title, '/', 1), '_', ' ') AS parent,
         SUM(page_len) / 1024 / 1024 AS total_size
 FROM page
 WHERE page_namespace = 1
-GROUP BY page_namespace, parent
-ORDER BY total_size DESC
+GROUP BY parent
+ORDER BY total_size DESC, parent
 LIMIT 100;
 ");
 $cursor->execute();
@@ -65,13 +64,12 @@ while (my $row = $cursor->fetchrow_hashref()) {
 
 $cursor = $conn->prepare("
 SELECT
-        '위키백과토론' AS ns_name,
         REPLACE(SUBSTRING_INDEX(page_title, '/', 1), '_', ' ') AS parent,
         SUM(page_len) / 1024 / 1024 AS total_size
 FROM page
 WHERE page_namespace = 5
-GROUP BY page_namespace, parent
-ORDER BY total_size DESC
+GROUP BY parent
+ORDER BY total_size DESC, parent
 LIMIT 100;
 ");
 $cursor->execute();

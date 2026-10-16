@@ -28,12 +28,15 @@ my $report_template = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
+# imagelinks.il_to는 MediaWiki 1.46에서 제거됨 -> il_target_id + linktarget 사용
 my $cursor = $conn->prepare("
 SELECT page_title,
   (SELECT COUNT(*)
-  FROM imagelinks
-  WHERE il_to = page_title) AS imagelinks,
+  FROM linktarget
+  JOIN imagelinks ON lt_id = il_target_id
+  WHERE lt_namespace = 6
+    AND lt_title = page_title) AS imagelinks,
   (SELECT COUNT(*)
   FROM linktarget
   JOIN pagelinks ON lt_id = pl_target_id
@@ -43,16 +46,17 @@ FROM page
 WHERE page_namespace = 6
   AND page_is_redirect = 1
 HAVING imagelinks + links <= 1
+ORDER BY page_title
 ");
 $cursor->execute();
 
 my $i = 1;
 my @output = ();
 while (my $row = $cursor->fetchrow_hashref()) {
-        my $page_title = sprintf('<span class="plainlinks">[{{fullurl:File:%s|redirect=no}} %s]</span>', $row->{'page_title'}, $row->{'page_title'});
-        my $table_row = sprintf("| %d\n| %s\n| %s\n| %s\n|-", $i, $page_title, $row->{'imagelinks'}, $row->{'links'});
-        push @output, $table_row;
-        $i++;
+	my $page_title = sprintf('<span class="plainlinks">[{{fullurl:File:%s|redirect=no}} %s]</span>', $row->{'page_title'}, $row->{'page_title'});
+	my $table_row = sprintf("| %d\n| %s\n| %s\n| %s\n|-", $i, $page_title, $row->{'imagelinks'}, $row->{'links'});
+	push @output, $table_row;
+	$i++;
 }
 
 setlocale(LC_TIME, $^O eq 'MSWin32' ? "Korean_Korea.utf8" : "ko_KR.utf8");
@@ -64,3 +68,4 @@ $cursor->finish();
 $conn->disconnect();
 
 printf("%s", $final_result);
+

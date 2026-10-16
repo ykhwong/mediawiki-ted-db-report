@@ -15,14 +15,17 @@ my $default_file='/data/project/tedbot/replica.my.cnf';
 my $timezone_str = '%Y년 %-m월 %-d일 (%a) %H:%M (KST)';
 my $timezone_area = 'Asia/Seoul';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
 my $cursor = $conn->prepare("
 SELECT a.user_name, a.user_editcount, b.ug_group
 	FROM user AS a
 	LEFT JOIN user_groups AS b
-	ON ug_user = user_id
-	WHERE user_editcount > '4999'
-	ORDER BY user_editcount desc;
+	ON b.ug_user = a.user_id
+	AND (b.ug_expiry IS NULL OR b.ug_expiry > DATE_FORMAT(UTC_TIMESTAMP(), '%Y%m%d%H%i%s'))
+	WHERE a.user_editcount > 4999
+	AND a.user_name NOT LIKE '~2%'
+	AND NOT EXISTS (SELECT 1 FROM user_groups AS g WHERE g.ug_user = a.user_id AND g.ug_group = 'bot')
+	ORDER BY a.user_editcount DESC, a.user_id, b.ug_group;
 ");
 $cursor->execute();
 
@@ -141,7 +144,6 @@ foreach my $ls (split /\n/, $tmp_list) {
 }
 
 $cursor->finish();
-$conn->disconnect();
 
 my $newWikitext;
 foreach my $ls (split /\n/, $wikitext) {
@@ -157,19 +159,19 @@ foreach my $ls (split /\n/, $wikitext) {
 }
 
 $cursor = $conn->prepare("
-SELECT DISTINCT actor_name, COUNT(page_title) AS cnt
+SELECT actor_name, COUNT(DISTINCT p.page_id) AS cnt
 FROM page p
 JOIN revision r ON p.page_id = r.rev_page
 JOIN actor a ON a.actor_id = r.rev_actor
-WHERE r.rev_parent_id = '0'
-AND p.page_namespace = '0'
-AND p.page_is_redirect = '0'
-AND NOT IS_IPV4(actor_name)
-AND NOT IS_IPV6(actor_name)
-AND NOT EXISTS (SELECT 1 from user_groups WHERE ug_user=actor_user and LOWER(ug_group) = 'bot')
+WHERE r.rev_parent_id = 0
+AND p.page_namespace = 0
+AND p.page_is_redirect = 0
+AND a.actor_user IS NOT NULL
+AND a.actor_name NOT LIKE '~2%'
+AND NOT EXISTS (SELECT 1 FROM user_groups WHERE ug_user = a.actor_user AND ug_group = 'bot')
 GROUP BY actor_name
 HAVING cnt > 100
-ORDER BY cnt DESC;
+ORDER BY cnt DESC, actor_name;
 ");
 $cursor->execute();
 
@@ -178,6 +180,8 @@ $tmp_list = "";
 while (my $row = $cursor->fetchrow_hashref()) {
 	$tmp_list .= $row->{'actor_name'} . "\t" . $row->{"cnt"} . "\n";
 }
+$cursor->finish();
+$conn->disconnect();
 
 print $newWikitext . "\n";
 print "== 신규 문서 작성 수에 따른 사용자 목록 ==\n";
@@ -210,3 +214,4 @@ foreach my $ls (split /\n/, $tmp_list) {
 		print "# ($contrib건) [자리 채움]\n";
 	}
 }
+

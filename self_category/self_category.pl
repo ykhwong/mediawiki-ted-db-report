@@ -28,19 +28,24 @@ my $report_template = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
+# categorylinks.cl_to는 MediaWiki 1.45에서 제거됨 -> cl_target_id + linktarget 사용
 my $cursor = $conn->prepare("
 SELECT
   page_title,
-  cat_pages,
-  cat_subcats
+  COALESCE(cat_pages, 0) AS cat_pages,
+  COALESCE(cat_subcats, 0) AS cat_subcats
 FROM page
 JOIN categorylinks
-ON cl_to = page_title
-RIGHT JOIN category
+ON cl_from = page_id
+JOIN linktarget
+ON cl_target_id = lt_id
+LEFT JOIN category
 ON cat_title = page_title
-WHERE page_id = cl_from
-AND page_namespace = 14;
+WHERE page_namespace = 14
+AND lt_namespace = 14
+AND lt_title = page_title
+ORDER BY page_title;
 ");
 $cursor->execute();
 

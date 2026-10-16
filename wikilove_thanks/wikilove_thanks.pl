@@ -65,17 +65,15 @@ my $report_template4 = '
 ';
 
 
-
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
 my $cursor = $conn->prepare("
 SELECT
     user_name,
     count(user_name) AS counts
     FROM wikilove_log, user
     WHERE wll_sender = user_id
-    AND NOT EXISTS (SELECT 1 from ipblocks WHERE ipb_address = user_name)
-    GROUP BY wll_sender
-    ORDER BY counts DESC
+    GROUP BY wll_sender, user_name
+    ORDER BY counts DESC, user_name
     LIMIT 50;
 ");
 $cursor->execute();
@@ -95,9 +93,8 @@ SELECT
     count(user_name) AS counts
     FROM wikilove_log, user
     WHERE wll_receiver = user_id
-    AND NOT EXISTS (SELECT 1 from ipblocks WHERE ipb_address = user_name)
-    GROUP BY wll_receiver
-    ORDER BY counts DESC
+    GROUP BY wll_receiver, user_name
+    ORDER BY counts DESC, user_name
     LIMIT 50;
 ");
 $cursor->execute();
@@ -112,13 +109,13 @@ while (my $row = $cursor->fetchrow_hashref()) {
 }
 
 $cursor = $conn->prepare("
-select user.user_name as user_name, count(user_name) as counts
+select actor_name as user_name, count(*) as counts
 from logging
-join user on log_actor = user.user_id
+join actor on log_actor = actor_id
 where log_type = 'thanks'
-AND NOT EXISTS (SELECT 1 from ipblocks WHERE ipb_address = user_name)
-group by user_name
-order by counts DESC
+  and actor_user IS NOT NULL
+group by actor_name
+order by counts DESC, actor_name
 LIMIT 100;
 ");
 $cursor->execute();
@@ -133,11 +130,13 @@ while (my $row = $cursor->fetchrow_hashref()) {
 }
 
 $cursor = $conn->prepare("
-select log_title as user_name, count(log_title) as counts
+select log_title as user_name, count(*) as counts
 from logging
 where log_type = 'thanks'
-group by user_name
-order by counts DESC
+  and log_namespace = 2
+  and log_title IS NOT NULL
+group by log_title
+order by counts DESC, log_title
 LIMIT 100;
 ");
 $cursor->execute();

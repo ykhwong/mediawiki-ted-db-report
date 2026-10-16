@@ -32,7 +32,7 @@ my $report_template = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
 my $cursor = $conn->prepare("
 SELECT draft_title
 FROM
@@ -97,7 +97,8 @@ WHERE EXISTS (
 	WHERE
 	page_namespace = 0
 	AND page_title = t.draft_title
-);
+)
+ORDER BY draft_title;
 ");
 $cursor->execute();
 

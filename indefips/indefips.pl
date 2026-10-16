@@ -1,5 +1,7 @@
 use strict;
 use warnings;
+use utf8;
+use Encode qw(decode);
 use Time::Piece;
 use POSIX qw(tzset);
 use POSIX qw(locale_h);
@@ -32,7 +34,7 @@ my $report_template = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
 my $cursor = $conn->prepare('
 SELECT DISTINCT
   bt_address,
@@ -44,22 +46,33 @@ SELECT DISTINCT
 FROM block
 JOIN block_target
 ON bl_target = bt_id
-JOIN comment
+LEFT JOIN comment_block
 ON bl_reason_id = comment_id
-JOIN actor
+LEFT JOIN actor
 ON bl_by_actor = actor_id
-WHERE bl_expiry = "infinity" AND bt_user is NULL
-AND NOT comment_text REGEXP "(proxy|Proxy|VPN|토르|Tor|^tor|프록시)";
+WHERE bl_expiry = \'infinity\'
+AND bt_user IS NULL
+AND bt_address IS NOT NULL
+AND NOT COALESCE(comment_text, \'\') REGEXP \'(proxy|Proxy|VPN|토르|Tor|^tor|프록시)\'
+ORDER BY bl_timestamp, bt_address;
 ');
 $cursor->execute();
+
+# 이 파일은 use utf8 이므로, DB에서 바이트열(varbinary/blob)로 받은 값은 decode 해야 출력 시 깨지지 않음
+sub to_text {
+	my $s = shift;
+	return '' unless defined $s;
+	return utf8::is_utf8($s) ? $s : decode('UTF-8', $s);
+}
 
 my $i = 1;
 my @output = ();
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $ip = sprintf("[[사용자토론:%s|%s]]", $row->{'bt_address'}, $row->{'bt_address'});
-	my $actor = $row->{'actor_name'};
+	my $address = to_text($row->{'bt_address'});
+	my $ip = sprintf("[[사용자토론:%s|%s]]", $address, $address);
+	my $actor = to_text($row->{'actor_name'});
 	my $timestamp = $row->{'bl_timestamp'};
-	my $comment = $row->{'comment_text'};
+	my $comment = to_text($row->{'comment_text'});
 	my $sitewide = $row->{'bl_sitewide'};
 	if ($sitewide =~ /1/) {
 		$sitewide = "아니오";
@@ -74,9 +87,11 @@ while (my $row = $cursor->fetchrow_hashref()) {
 setlocale(LC_TIME, $^O eq 'MSWin32' ? "Korean_Korea.utf8" : "ko_KR.utf8");
 $ENV{TZ} = $timezone_area;
 my $current_of = localtime->strftime($timezone_str);;
+$current_of = decode('UTF-8', $current_of);
 my $final_result = sprintf($report_template, $current_of, join("\n", @output));
 
 $cursor->finish();
 $conn->disconnect();
 
+binmode(STDOUT, ':encoding(UTF-8)');
 printf("%s", $final_result);

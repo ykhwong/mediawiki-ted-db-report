@@ -30,25 +30,26 @@ my $report_template = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
 my $cursor = $conn->prepare(q"
 SELECT title, title2
 FROM
 (
 SELECT
         page_title AS title,
-        REGEXP_REPLACE(page_title, '_\\\\(.+\\\\)$', '') AS title2
+        REGEXP_REPLACE(page_title, '_\\\\([^()]+\\\\)$', '') AS title2
 FROM page
 WHERE page_namespace = 0
 AND page_is_redirect = 0
-AND page_title REGEXP '_\\\\(.+\\\\)$'
+AND page_title REGEXP '_\\\\([^()]+\\\\)$'
 ) AS t
-WHERE NOT EXISTS (SELECT 1 FROM page WHERE page_title = t.title2)
+WHERE NOT EXISTS (SELECT 1 FROM page WHERE page_namespace = 0 AND page_title = t.title2)
+ORDER BY title
 ;
 ");
 $cursor->execute();
 
-my $i = 1;
+my $i = 0;
 my @output = ();
 while (my $row = $cursor->fetchrow_hashref()) {
 	my $page_title = sprintf("[[:%s]] || [[:%s]]", $row->{'title'}, $row->{'title2'});

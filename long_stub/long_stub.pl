@@ -5,6 +5,7 @@ use POSIX qw(tzset);
 use POSIX qw(locale_h);
 use locale;
 use DBI;
+use Encode qw(decode);
 use User::pwent;
 
 my $host='kowiki.analytics.db.svc.eqiad.wmflabs';
@@ -26,22 +27,26 @@ my $report_template = '
 %s
 |}
 ';
-
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
-my $cursor = $conn->prepare("
-SELECT
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
+# - LIKE에서 '_'는 임의의 한 글자를 뜻하므로 '\_'로 이스케이프 (Perl "" 안이므로 '\\_')
+# - DBD::MariaDB는 SQL 문을 문자열(Unicode)로 받으므로 한국어 리터럴은 decode 후 전달
+my $cursor = $conn->prepare(decode('UTF-8', "
+SELECT DISTINCT
   page_title,
-    page_len
-    FROM page
-    JOIN categorylinks
-    ON cl_from = page_id
-    WHERE cl_to LIKE  '%에_관한_토막글'
-    AND page_namespace = 0
-    AND page_len > 2000
-    GROUP BY page_title
-    ORDER BY page_len DESC
-    LIMIT 1000;
-");
+  page_len
+FROM page
+JOIN categorylinks
+  ON categorylinks.cl_from = page.page_id
+JOIN linktarget
+  ON categorylinks.cl_target_id = linktarget.lt_id
+WHERE linktarget.lt_namespace = 14
+  AND linktarget.lt_title LIKE '%에\\_관한\\_토막글'
+  AND page_namespace = 0
+  AND page_is_redirect = 0
+  AND page_len > 2000
+ORDER BY page_len DESC, page_title
+LIMIT 1000;
+"));
 $cursor->execute();
 
 my $i = 1;

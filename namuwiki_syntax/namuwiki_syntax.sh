@@ -80,7 +80,6 @@ echo "|}"
 
 CNT=1
 cat <<"END"
-
 == 외부 링크가 더 시드 문법으로 걸린 문서 ==
 {| class="wikitable" style="text-align:center; width: 750px;"
 ! width="300px" | 더 시드 문법
@@ -90,7 +89,6 @@ cat <<"END"
 |-
 |<code><nowiki>[[https://example.org|예제]]</nowiki></code>||<code><nowiki>[https://example.org 예제]</nowiki></code>
 |}
-
 {| class="wikitable sortable plainlinks" style="width:100%; margin:auto;"
 |- style="white-space:nowrap;"
 ! 순번 !! 문서 이름
@@ -110,3 +108,4 @@ echo "|}"
 
 
 unset IFS
+

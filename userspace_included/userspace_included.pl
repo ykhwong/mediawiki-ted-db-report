@@ -5,6 +5,7 @@ use POSIX qw(tzset);
 use POSIX qw(locale_h);
 use locale;
 use DBI;
+use Encode qw(decode);
 use User::pwent;
 
 my $host='kowiki.analytics.db.svc.eqiad.wmflabs';
@@ -26,27 +27,32 @@ my $report_template = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
-my $cursor = $conn->prepare("
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
+# - '삭제_신청_문서'는 틀이 아니라 분류이므로 templatelinks가 아닌 categorylinks로 검사
+#   (categorylinks.cl_to는 MediaWiki 1.45에서 제거됨 -> cl_target_id + linktarget 사용)
+# - DBD::MariaDB는 SQL 문을 문자열(Unicode)로 받으므로 한국어 리터럴은 decode 후 전달
+my $cursor = $conn->prepare(decode('UTF-8', "
 SELECT
   DISTINCT page_title
 FROM
   page
   JOIN pagelinks ON pl_from = page_id
-  JOIN linktarget ON pl_target_id = lt_id
+  JOIN linktarget AS plt ON pl_target_id = plt.lt_id
 WHERE
-  pl_from_namespace = 0
-  AND lt_namespace IN (2, 3)
+  page_namespace = 0
+  AND pl_from_namespace = 0
+  AND plt.lt_namespace IN (2, 3)
   AND NOT EXISTS (
-    SELECT 1 FROM templatelinks
-    JOIN linktarget ON tl_target_id = lt_id
-    WHERE tl_from = page_id
-    AND lt_namespace = 10
-    AND lt_title IN (
+    SELECT 1 FROM categorylinks
+    JOIN linktarget AS clt ON cl_target_id = clt.lt_id
+    WHERE cl_from = page_id
+    AND clt.lt_namespace = 14
+    AND clt.lt_title IN (
       '삭제_신청_문서'
     )
-  );
-");
+  )
+ORDER BY page_title;
+"));
 $cursor->execute();
 
 my $i = 1;

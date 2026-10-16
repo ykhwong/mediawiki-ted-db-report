@@ -49,7 +49,6 @@ my $report_template = '
 %s
 |}
 ';
-
 my %namespace = (
     0 => "일반",
     1 => "토론",
@@ -76,32 +75,33 @@ my %namespace = (
     710 => "TimedText",
     711 => "TimedText talk",
     828 => "모듈",
-    829 => "모듈토론"
+    829 => "모듈토론",
+    1728 => "Event",
+    1729 => "Event talk",
+    2300 => "Gadget",
+    2301 => "Gadget talk",
+    2302 => "Gadget definition",
+    2303 => "Gadget definition talk"
 );
 
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
 my $cursor = $conn->prepare("
 SELECT
   page_namespace,
-  MAX(notredir) AS notredir,
-  MAX(redir) AS redir
-FROM (
-  SELECT page.page_namespace,
-         IF( page_is_redirect, COUNT(page.page_namespace), 0 ) AS redir,
-         IF( page_is_redirect, 0, COUNT(page.page_namespace)) AS notredir
-  FROM page
-  GROUP BY page_is_redirect, page_namespace
-  ORDER BY page_namespace, page_is_redirect
-) AS pagetmp
-GROUP BY page_namespace;
+  SUM(page_is_redirect = 0) AS notredir,
+  SUM(page_is_redirect = 1) AS redir
+FROM page
+GROUP BY page_namespace
+ORDER BY page_namespace;
 ");
 $cursor->execute();
 
 my @output = ();
 my $total_cnt = 0;
 while (my $row = $cursor->fetchrow_hashref()) {
-	my $page_title = sprintf("%s || %s || %s || %s || %s ", $row->{'page_namespace'}, $namespace{$row->{'page_namespace'}}, ($row->{'notredir'} + $row->{'redir'}), $row->{'notredir'}, $row->{'redir'});
+	my $ns_name = $namespace{$row->{'page_namespace'}} // $row->{'page_namespace'};
+	my $page_title = sprintf("%s || %s || %s || %s || %s ", $row->{'page_namespace'}, $ns_name, ($row->{'notredir'} + $row->{'redir'}), $row->{'notredir'}, $row->{'redir'});
 	my $table_row = sprintf("| %s\n|-", $page_title);
 	if ($row->{'page_namespace'} eq 0) {
 		$total_cnt = $row->{'notredir'} + $row->{'redir'};

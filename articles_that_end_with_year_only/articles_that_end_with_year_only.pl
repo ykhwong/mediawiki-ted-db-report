@@ -5,6 +5,7 @@ use POSIX qw(tzset);
 use POSIX qw(locale_h);
 use locale;
 use DBI;
+use Encode qw(decode);
 use User::pwent;
 
 my $host='kowiki.analytics.db.svc.eqiad.wmflabs';
@@ -30,17 +31,18 @@ my $report_template = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
-my $cursor = $conn->prepare(q"
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
+# DBD::MariaDB는 SQL 문을 문자열(Unicode)로 받으므로 한국어 리터럴은 decode 후 전달
+my $cursor = $conn->prepare(decode('UTF-8', q"
 SELECT
         page_title
 FROM page
 WHERE page_namespace = 0 AND page_is_redirect = 0
 AND page_title REGEXP '_\\\\([0-9]+년\\\\)$'
-AND page_title NOT REGEXP '_목록_'
+AND page_title NOT REGEXP '(^|_)목록_'
 ORDER BY page_title ASC
 ;
-");
+"));
 $cursor->execute();
 
 my @output = ();
@@ -48,7 +50,7 @@ my $cnt = 0;
 while (my $row = $cursor->fetchrow_hashref()) {
 	my $p_title = $row->{'page_title'};
 	my $p_title2 = $p_title;
-	$p_title2 =~ s/_\(.*//;
+	$p_title2 =~ s/_\([0-9]+년\)$//;
 	my $page_title = sprintf("[[:%s]] || [[:%s]]", $p_title, $p_title2);
 	my $table_row = sprintf("| %s\n|-", $page_title);
 	$cnt++;

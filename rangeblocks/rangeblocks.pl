@@ -32,7 +32,7 @@ my $report_template = '
 |}
 ';
 
-my $conn = DBI->connect("DBI:mysql:database=$dbname;host=$host;mysql_read_default_file=$default_file");
+my $conn = DBI->connect("DBI:MariaDB:database=$dbname;host=$host;mariadb_read_default_file=$default_file", undef, undef, { RaiseError => 1, PrintError => 0 });
 my $cursor = $conn->prepare('
 SELECT DISTINCT
   bt_address,
@@ -44,11 +44,14 @@ SELECT DISTINCT
 FROM block
 JOIN block_target
 ON bl_target = bt_id
-JOIN comment
+LEFT JOIN comment_block
 ON bl_reason_id = comment_id
-JOIN actor
+LEFT JOIN actor
 ON bl_by_actor = actor_id
-WHERE bt_user IS NULL AND bt_address REGEXP "\/"
+WHERE bt_user IS NULL
+AND bt_address LIKE \'%/%\'
+AND (bl_expiry = \'infinity\' OR bl_expiry > DATE_FORMAT(UTC_TIMESTAMP(), \'%Y%m%d%H%i%s\'))
+ORDER BY bl_timestamp, bt_address
 ');
 $cursor->execute();
 
@@ -66,7 +69,7 @@ while (my $row = $cursor->fetchrow_hashref()) {
 	} else {
 		$sitewide = "예";
 	}
-	my $table_row = sprintf("| %d || %s || %s || %s || %s || %s \n|| %s\n|-", $i, $ip, $actor, $timestamp, $expiry, $comment, $sitewide);
+	my $table_row = sprintf("| %d || %s || %s || %s || %s || %s\n| %s\n|-", $i, $ip, $actor, $timestamp, $expiry, $comment, $sitewide);
 	push @output, $table_row;
 	$i++;
 }

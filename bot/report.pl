@@ -491,6 +491,11 @@ sub _perform {
 					$try = `sh $pl`;
 				}
 			}
+			# 스크립트가 오류로 끝났으면(예: SQL 오류) 불완전한 결과로 문서를 덮어쓰지 않음
+			if ($? != 0) {
+				util::_nprint(sprintf("[FAILED] %s (exit code: %d, skipped)\n", $pl, $? >> 8));
+				undef $try;
+			}
 			if ($try) {
 				my $wikitext = $bot_ko->get_text($title);
 				my $wikitext_changed = ::decode("utf8", $try);
@@ -554,13 +559,12 @@ sub _main {
 }
 
 __END__
-
 Copyright 2015-2021 TedKoWiki
 This script file was created by User:Ykhwong from ko.wikipedia.org
 Tested with Perl 5 version 20 subversion 3 on MS-Windows / Linux
-
 LICENSE
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY.
 You may redistribute it and/or modify source code, but you MUST
 provide the source code you have made.
+
